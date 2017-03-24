@@ -1,5 +1,4 @@
 %% Plot 1D basins
-%%
 mu1 = 4.0;
 std1 = 1.0;
 mu2 = 12.0;
