@@ -1,5 +1,4 @@
 %% Plot D basins
-%%
 D = 3;
 mu1 = 4*ones(1,D);
 std1 = 1.0;
@@ -9,12 +8,19 @@ arg = struct('std1',std1,'mu1',mu1,'std2',std2,'mu2',mu2);
 %% evaluate U
 N = 200; % number of samples
 B = 18; % edge bound for compact set
-W = rand([N,D]);
+%W = (18-0)*rand([N,D]);
+W = zeros(N,D);
+W(:,1) = linspace(1,18,200);
+W(:,2) = linspace(1,18,200);
+W(:,3) = linspace(1,18,200);
 y = U(W,arg);
 %% plot E^(-U/T)
 T = 1;
 y = exp(-y/T);
 %% plot U
+figure;
 plot(W(:,1),y)
+figure;
 plot(W(:,2),y)
+figure;
 plot(W(:,3),y)
