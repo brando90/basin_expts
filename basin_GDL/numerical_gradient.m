@@ -1,6 +1,6 @@
 function [ dU_dW ] = numerical_gradient(W,mu1,std1,mu2,std2, eps)
 %compute GD update numerically
-[D1, D2] = size(w);
+[D1, D2] = size(W);
 dU_dW = zeros(D1, D2);
 for d1=1:D1
     for d2=1:D2
