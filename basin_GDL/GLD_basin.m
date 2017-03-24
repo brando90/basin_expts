@@ -1,12 +1,13 @@
+clear;
 %% GDL & mdl params
-D = 1;
+D = 3;
 mu1 = 4*ones(1,D);
 std1 = 1.0;
 mu2 = 12.0*ones(1,D);
 std2 = 2.0;
-W = 6.5*ones(1,D);
+W = 6.5*ones(1,D) + normrnd(0.0,2.0);
 %
-iter = 10000;
+iter = 30^3;
 eta = 1.0;
 B = 18;
 %
@@ -15,7 +16,7 @@ mu_noise = 0.0;
 std_noise = 1.0;
 %% histogram
 nbins = 30;
-print_hist = 0;
+print_hist = 1;
 W_history = zeros(iter,D);
 filename = 'current_gdl_run'
 %% optimize
@@ -35,5 +36,9 @@ end
 save(filename)
 %%
 if print_hist
-    histogram(W_hist,nbins)
+    for d=1:D
+        figure;
+        histogram(W_history(:,d),nbins)
+    end
+    W_history
 end

@@ -1,8 +1,10 @@
+clear;
 %%
 filename = 'current_gdl_run';
 load(filename)
 %%
-nbins = 55;
+nbins = 30;
 for d=1:D
-    histogram(W_hist,nbins)
+    figure;
+    histogram(W_history(:,d),nbins)
 end
