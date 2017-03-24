@@ -22,6 +22,20 @@ E2 = get_E(W,mu2,std2);
 U = 1 - E1 - E2;
 %%
 T = 1;
-U = exp(-U/T);
+U1 = exp(-U/T);
+T = 5;
+U2 = exp(-U/T);
+% T = 10;
+% U3 = exp(-U/T);
 %%
-surf(W1,W2,U)
+%figure
+nb_plots = 2;
+subplot(1,nb_plots,1)
+surf(W1,W2,U1)
+%
+subplot(1,nb_plots,2)
+surf(W1,W2,U2)
+%
+% subplot(1,3,3)
+% surf(W1,W2,U3)
+%set(gca,'zlim',[0.2 0.4]);
