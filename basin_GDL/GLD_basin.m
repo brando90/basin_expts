@@ -15,7 +15,9 @@ mu_noise = 0.0;
 std_noise = 1.0;
 %% histogram
 nbins = 30;
+print_hist = 0;
 W_history = zeros(iter,D);
+filename = 'current_gdl_run'
 %% optimize
 for i=1:iter
     % 
@@ -26,8 +28,12 @@ for i=1:iter
     %
     W_history(i,:) = W;
     %
-    U = U_func( W,mu1,std1,mu2,std2 );
-    fprintf('U=%s, W=%s \n',U,W)
+    %U = U_func( W,mu1,std1,mu2,std2 );
+    %fprintf('U=%s, W=%s \n',U,W)
 end
 %%
-histogram(W_hist,nbins)
+save(filename)
+%%
+if print_hist
+    histogram(W_hist,nbins)
+end
