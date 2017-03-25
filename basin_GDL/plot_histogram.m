@@ -6,5 +6,5 @@ load(filename)
 nbins = 30;
 for d=1:D
     figure;
-    histogram(W_history(:,d),nbins)
+    histogram(W_history(:,d),nbins,'Normalization','probability')
 end
