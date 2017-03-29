@@ -1,20 +1,17 @@
 clear;
 %% computation time params
-D = 5;
+D = 2;
 nbins = 30;
 c = 2700000;
 iter = c;
-%iter = c*nbins^3;
+%iter = c*nbins^D;
 %% GDL & mdl params
-edge_start1 = 4;
-edge_length1 = 2;
-edge_start2 = 12;
-edge_length2 = 4;
-f = @(x) -prod( (x > edge_start1) .* ( (edge_start1+edge_length1) >= x) ) + -prod( (x > edge_start2) .* ( (edge_start2+edge_length2) >= x) );
+i_cord = 2;
+f = @(x) degenerate_wedge(x - 8,i_cord) + nondegenerate_wedge(x - [2 2]);
 g_eps = 0.25;
-W = 7.0*ones(1,D);
+W = 3.0*ones(1,D);
 eta = 1.0;
-B = 18;
+B = 12;
 %
 A = 0.2;
 mu_noise = 0.0;
@@ -37,7 +34,7 @@ W_hist_counts = zeros(size(edges)-[0,1]);
 for i=2:iter+1
     %
     %g = get_gradient(W,mu1,std1,mu2,std2);
-    g = numerical_gradient(W,f,g_eps);
+    g = CalcNumericalFiniteDiff(W,f,g_eps);
     eps = normrnd(mu_noise,std_noise,[1,D]);
     % 
     %W = mod(W - eta*g, B);
@@ -59,6 +56,9 @@ if print_hist
     if D==2
         fig = figure;
         hist3(W_history,[nbins,nbins]);
+        ylabel('Weight W_1')
+        xlabel('Weight W_2')
+        zlabel(sprintf('Normalization: %s',Normalization))
 %         if strcmp(Normalization, 'count') == 0
 %             zlim([0,1])
 %         end

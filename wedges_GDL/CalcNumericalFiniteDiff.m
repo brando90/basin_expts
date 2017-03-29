@@ -1,4 +1,4 @@
-function [ vNumericalGrad ] = CalcNumericalGradient( hInputFunc, vInputPoint, epsVal )
+function [ vNumericalGrad ] = CalcNumericalFiniteDiff( vInputPoint, hInputFunc, epsVal )
 
 numElmnts       = size(vInputPoint, 2);
 vNumericalGrad  = zeros([1,numElmnts]);
