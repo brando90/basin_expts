@@ -2,7 +2,7 @@ clear;
 %% computation time params
 D = 4;
 nbins = 30;
-c = 100;
+c = 600;
 %% GDL & mdl params
 mu1 = 4*ones(1,D);
 std1 = 1.0;
