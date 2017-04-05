@@ -1,6 +1,6 @@
 clear;
 %% plot degenerate wedge
-x = linspace(0,12,140);
+x = linspace(0,6,140);
 y = x;
 [X,Y] = meshgrid(x,y);
 %

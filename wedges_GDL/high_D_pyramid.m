@@ -21,7 +21,7 @@ else
 %         minus(d) = t_m;
 %     end
     plus = (ub - c)./(x - c);
-    minus = (-lb - c)./(x - c);
+    minus = (lb - c)./(x - c);
     t_solns = [plus, minus];
     %% get the smallest *positive* solution
     t_solns( t_solns < 0 ) = inf;
