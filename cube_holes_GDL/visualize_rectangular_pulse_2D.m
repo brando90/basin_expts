@@ -15,3 +15,6 @@ edge_length2 = 4;
 f = @(x) -prod( (x > edge_start1) .* ( (edge_start1+edge_length1) >= x) ) + -prod( (x > edge_start2) .* ( (edge_start2+edge_length2) >= x) );
 Z2 = get_Z_from_meshgrid_f(X,Y,f);
 surf(X,Y,Z2)
+ylabel('weight W_1')
+xlabel('weight W_2')
+zlabel('Loss')

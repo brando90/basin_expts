@@ -10,7 +10,7 @@ edge_start1 = 4;
 edge_length1 = 2;
 edge_start2 = 12;
 edge_length2 = 4;
-f = @(x) -prod( (x > edge_start1) .* ( (edge_start1+edge_length1) >= x) ) + -prod( (x > edge_start2) .* ( (edge_start2+edge_length2) >= x) );
+f = @(x) -prod( (x > edge_start1) .* ( (edge_start1+edge_length1) >= x) ) + -prod( (x > edge_start2) .* ( (edge_start2+edge_length2) >= x) ) + 1;
 g_eps = 0.25;
 W = 7.0*ones(1,D);
 eta = 1.0;
