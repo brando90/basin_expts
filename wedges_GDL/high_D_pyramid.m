@@ -9,17 +9,6 @@ if inside_base_hypercube
     return
 else
     %% get T
-%     D = length(x);
-%     plus = zeros(1,D);
-%     minus = zeros(1,D);
-%     for d=1:D
-%         % solve for t, c_i + t(x_i - c_i) = +-1
-%         t_p = (ub - c(d))/(x(d) - c(d));
-%         t_m = (-lb - c(d))/(x(d) - c(d));
-%         %
-%         plus(d) = t_p;
-%         minus(d) = t_m;
-%     end
     plus = (ub - c)./(x - c);
     minus = (lb - c)./(x - c);
     t_solns = [plus, minus];

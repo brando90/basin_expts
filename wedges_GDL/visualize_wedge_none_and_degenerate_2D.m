@@ -1,6 +1,6 @@
 clear;
 %% plot degenerate wedge
-x = linspace(0,6,140);
+x = linspace(0,12,100);
 y = x;
 [X,Y] = meshgrid(x,y);
 %
@@ -22,7 +22,8 @@ c = [3,3];
 apex = -1;
 lb = 2;
 ub = 4;
-f = @(x) high_D_pyramid(x,c,apex,lb,ub); 
+f = @(x) high_D_pyramid(x,c,apex,lb,ub) + degenerate_wedge(x - 8,i_cord); 
+%f = @(x) f(x) + nondegenerate_wedge(x - [2 2]);
 Z = get_Z_from_meshgrid_f(X,Y,f);
 figure;
 surf(X,Y,Z);

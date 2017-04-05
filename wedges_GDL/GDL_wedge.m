@@ -7,7 +7,12 @@ iter = c;
 %iter = c*nbins^D;
 %% GDL & mdl params
 i_cord = 2;
-f = @(x) degenerate_wedge(x - 8,i_cord) + nondegenerate_wedge(x - [2 2]);
+%f = @(x) degenerate_wedge(x - 8,i_cord) + nondegenerate_wedge(x - [2 2]);
+c = 3*ones(1,D);
+apex = -1;
+lb = 2;
+ub = 4;
+f = @(x) high_D_pyramid(x,c,apex,lb,ub) + degenerate_wedge(x - 8,i_cord);
 g_eps = 0.25;
 W = 3.0*ones(1,D);
 eta = 1.0;
