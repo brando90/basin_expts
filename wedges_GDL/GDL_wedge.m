@@ -1,6 +1,6 @@
 clear;
 %% computation time params
-D = 2;
+D = 5;
 nbins = 30;
 c = 2700000;
 iter = c;
@@ -29,8 +29,8 @@ filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
 save_figs = 1;
 edges = linspace(0,B,nbins);
 %Normalization = 'probability';
-Normalization = 'pdf';
-%Normalization = 'count';
+%Normalization = 'pdf';
+Normalization = 'count';
 %%
 datetime('now')
 tic
@@ -61,8 +61,8 @@ if print_hist
     if D==2
         fig = figure;
         hist3(W_history,[nbins,nbins]);
-        ylabel('Weight W_1')
-        xlabel('Weight W_2')
+        ylabel('Weight W_2')
+        xlabel('Weight W_1')
         zlabel(sprintf('Normalization: %s',Normalization))
 %         if strcmp(Normalization, 'count') == 0
 %             zlim([0,1])
