@@ -18,11 +18,11 @@ ub = 4;
 f = @(x) high_D_pyramid(x,c,apex,lb,ub) + degenerate_wedge(x - offset_i_coord,i_coord); 
 % plot wedge function
 Z = get_Z_from_meshgrid_f(X,Y,f);
-% figure;
-% surf(X,Y,Z);
-% ylabel('weight W_1')
-% xlabel('weight W_2')
-% zlabel('Loss')
+figure;
+surf(X,Y,Z);
+ylabel('weight W_1')
+xlabel('weight W_2')
+zlabel('Loss')
 %% RBF Wedge
 [ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z ); % X_data = [N, D], Y_data = [N, D_out]
 % get RBF function
@@ -33,10 +33,10 @@ stddev = sqrt(2);
 beta = 1/(2*stddev^2);
 %
 Kern = produce_kernel_matrix_bsxfun(X_data, t, beta); % (N x K)
-C = Kern \ Y_data; % ()
+C = Kern \ Y_data; % (K x 1)
 %
 tt = sum(t.^2,2)';
-f = @(x,t) exp( -beta*eucledian(x,t,tt) );
+f = @(x) exp( -beta*eucledian(x,t,tt) ) * C;
 % plot RBF function
 Z_rbf = get_Z_from_meshgrid_f(X,Y,f);
 figure;
