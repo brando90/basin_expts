@@ -1,7 +1,7 @@
 function [ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z )
 % want to make data set as:
 %   ( x = [x1, x2], z = f(x,y) )
-%   X = [D, N], Z = [Dout, N] = [1, N]
+%   X_data = [D, N], Y_data = [Dout, N] = [1, N]
 [dim_x, dim_y] = size(X);
 N = dim_x * dim_y;
 X_data = zeros(2,N);
@@ -18,4 +18,6 @@ for dx = 1:dim_x
         i=i+1;
     end
 end
+X_data = X_data';
+Y_data = Y_data';
 end
