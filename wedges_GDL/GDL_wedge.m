@@ -1,6 +1,6 @@
 clear;
 %% computation time params
-D = 5;
+D = 2;
 nbins = 30;
 c = 2700000;
 iter = c;
