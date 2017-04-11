@@ -142,4 +142,4 @@ if check_visual
     zlabel('Loss')
 end
 %%
-beep;
+beep;beep;
