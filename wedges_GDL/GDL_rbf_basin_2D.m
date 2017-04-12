@@ -5,15 +5,15 @@ load('rbf_loss_surface_visual');
 D = 2;
 nbins = 30;
 nbins_g = 100;
-c = 2; % 270000
+c = 270000; % 270000
 iter = c;
 %iter = c*nbins^D;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-report_freq = 1;
+%report_freq = 1;
 %% initialization
-W = 3.0*ones(1,D);
+W = 8*ones(1,D);
 %W = [3,3];
 W_mu_noise = 0;
 W_std_noise = 0.1;
@@ -27,15 +27,15 @@ A = 0.2;
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
-%batch_size = 100 + 1;
 %batch_size = K + 1;
-batch_size = 90;
+batch_size = 25;
 %% periodicity bound
 B = 12;
 %% histogram
 print_hist = 1;
 W_history = zeros(iter,D);
 g_history = zeros(iter,D);
+pyramid_batch_history = zeros([iter,1]);
 filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
 save_figs = 1;
 edges = linspace(0,B,nbins);
@@ -54,14 +54,20 @@ for i=2:iter+1
         c_batch = ones(size(C));
         pyramid_batch = 1;
     else
-        i_batch = datasample(1:length(C),batch_size,'Replace',false); % chooses which data points to put in the mini-batch
-        c_batch = zeros(size(C));
+%         i_batch = datasample(1:length(C),batch_size,'Replace',false); % chooses which data points to put in the mini-batch
+%         c_batch = zeros(size(C));
+%         c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
+%         pyramid_batch = randi([0 1],1,1);
+        i_batch = datasample(1:length(C)+1,batch_size+1,'Replace',false); % chooses which data points to put in the mini-batch
+        c_batch = zeros([length(C)+1,1]);
         c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
-        pyramid_batch = randi([0 1],1,1);
+        pyramid_batch = c_batch(end);
+        c_batch = c_batch(1:end-1,:);
+        pyramid_batch_history(i) = pyramid_batch;
     end
     f = @(x) f_batch(x,c_batch,pyramid_batch);
     %f = f_pyramid;
-    visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
+    %visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
     %
     g = CalcNumericalFiniteDiff(W,f,g_eps);
     gdl_eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
@@ -77,6 +83,7 @@ for i=2:iter+1
        fprintf('i : %d, g : %s, eta*g : %s, W: %s \n',i, num2str(g,'%+.5f'), num2str(eta*g,'%+.5f'),num2str(W,'%+.5f') );
     end
 end
+fprintf('sum(pyramid_batch_history) = %f \n',sum(pyramid_batch_history)/iter);
 elapsedTime = toc;
 fprintf('\nD: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,nbins,D, iter);
 fprintf('elapsedTime seconds: %fs, minutes: %fm, hours: %fh \n', elapsedTime,elapsedTime/60,elapsedTime/(60*60));
@@ -132,7 +139,7 @@ if check_visual
     pyramid_batch = 1;
     f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
     %
-    visualize_surf_single(f,100,lb,ub);title('f');
+    visualize_surf_single(f,100,lb,ub);title('f (Last Batch)');
     visualize_surf_single(f_full_batch,100,lb,ub);title('f full batch');
     visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
     visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
