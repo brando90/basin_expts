@@ -2,7 +2,7 @@ clear;
 %% computation time params
 D = 2;
 nbins = 30;
-c = 2700000;
+c = 270000;
 iter = c;
 %iter = c*nbins^D;
 %% GDL & mdl params
@@ -19,8 +19,8 @@ eta = 1.0;
 B = 12;
 %
 A = 0.2;
-mu_noise = 0.0;
-std_noise = 1.0;
+gdl_mu_noise = 0.0;
+gdl_std_noise = 1.0;
 %% histogram
 print_hist = 1;
 W_history = zeros(iter,D);
@@ -40,7 +40,7 @@ for i=2:iter+1
     %
     %g = get_gradient(W,mu1,std1,mu2,std2);
     g = CalcNumericalFiniteDiff(W,f,g_eps);
-    eps = normrnd(mu_noise,std_noise,[1,D]);
+    eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
     % 
     %W = mod(W - eta*g, B);
     W = mod(W - eta*g + A*eps, B);

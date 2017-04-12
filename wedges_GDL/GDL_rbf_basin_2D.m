@@ -1,37 +1,36 @@
 clear;
+%% load RBF wedge loss surface
 load('rbf_loss_surface_visual');
 %% computation time params
 D = 2;
 nbins = 30;
-%c = 270000;
-%c = c/10;
-c = 1000000;
-%c = 30
+nbins_g = 100;
+c = 2; % 270000
 iter = c;
 %iter = c*nbins^D;
 %% GDL, SGD & mdl params
-%load('rbf_loss_surface_visual');
-f = f_rbf_loss_surface;
-check_visual = 1;
+check_visual = 1
 report_freq = -1;
-report_freq = 1000;
-% initialization
-%W = 3.0*ones(1,D);
-W = [8,8];
+report_freq = 1;
+%% initialization
+W = 3.0*ones(1,D);
+%W = [3,3];
 W_mu_noise = 0;
-W_std_noise = 0.01;
+W_std_noise = 0.1;
 W_eps = normrnd(W_mu_noise,W_std_noise,[1,D]);
 W = W + W_eps;
-% gradient params
-g_eps = 0.0001; % size of step difference
-eta = 0.001; % step size
-% noise params for GDL
+%% GD params
+g_eps = 0.25; % size of step difference
+eta = 1.0; % step size
+%% Langevian/noise params
 A = 0.2;
-mu_noise = 0.0;
-std_noise = 1.0;
-% params for (mini-batch) SGD
-batch_size = 15;
-% periodicity bound
+gdl_mu_noise = 0.0;
+gdl_std_noise = 1.0;
+%% SGD/MGD params 
+%batch_size = 100 + 1;
+%batch_size = K + 1;
+batch_size = 90;
+%% periodicity bound
 B = 12;
 %% histogram
 print_hist = 1;
@@ -51,19 +50,24 @@ g_history(1,:) = zeros(size(W));
 W_hist_counts = zeros(size(edges)-[0,1]);
 fprintf('W_init: %s\n', num2str(W,'%+.5f'));
 for i=2:iter+1
-    %
-    i_batch = datasample(1:length(C),batch_size,'Replace',false);
-    c_batch = zeros(size(C));
-    c_batch(i_batch) = 1;
-    pyramid_batch = randi([0 1],1,1);
+    if batch_size == K+1 % choose all data points
+        c_batch = ones(size(C));
+        pyramid_batch = 1;
+    else
+        i_batch = datasample(1:length(C),batch_size,'Replace',false); % chooses which data points to put in the mini-batch
+        c_batch = zeros(size(C));
+        c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
+        pyramid_batch = randi([0 1],1,1);
+    end
     f = @(x) f_batch(x,c_batch,pyramid_batch);
-    %visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
+    %f = f_pyramid;
+    visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
     %
     g = CalcNumericalFiniteDiff(W,f,g_eps);
-    eps = normrnd(mu_noise,std_noise,[1,D]);
-    % 
-    W = mod(W - eta*g, B);
-    %W = mod(W - eta*g + A*eps, B);
+    gdl_eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
+    %
+    %W = mod(W - eta*g, B);
+    W = mod(W - eta*g + A*gdl_eps, B);
     %2D
     W_history(i,:) = W;
     g_history(i,:) = g;
@@ -82,34 +86,25 @@ save(filename)
 %%
 if print_hist
     if D==2
+        %% plot W_history
         fig = figure;
         hist3(W_history,[nbins,nbins]);
-        ylabel('Weight W_2')
-        xlabel('Weight W_1')
-        zlabel(sprintf('Normalization: %s',Normalization))
-%         if strcmp(Normalization, 'count') == 0
-%             zlim([0,1])
-%         end
-        f = sprintf('W_%dD',D);
-        saveas(fig,f)
-        saveas(fig,f,'pdf')
-        
-        figure;
-        plot(1:length(g_history(:,1)),g_history(:,1))
-        title('gradient vs iteration')
-        
+        ylabel('Weight W_2');xlabel('Weight W_1');
+        zlabel(sprintf('Normalization: %s',Normalization));
+        f_name=sprintf('W_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
+        %% plot learning curve
         fig = figure;
-        hist3(g_history,[nbins,nbins]);
-        ylabel('dL/W_2')
-        xlabel('dL/W_1')
+        iterations=1:length(g_history(:,1));
+        subplot(1,2,1);plot(iterations,g_history(:,1));
+        subplot(1,2,2);plot(iterations,g_history(:,2));
+        f_name=sprintf('g_vs_iter_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
+        %%
+        fig = figure;
+        hist3(g_history,[nbins_g,nbins_g]);
+        ylabel('dL/W_2');xlabel('dL/W_1');
         zlabel(sprintf('Normalization: %s',Normalization))
         set(get(gca,'child'),'FaceColor','interp','CDataMode','auto');
-%         if strcmp(Normalization, 'count') == 0
-%             zlim([0,1])
-%         end
-        f = sprintf('G_%dD',D);
-        saveas(fig,f)
-        saveas(fig,f,'pdf')
+        f_name=sprintf('G_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
     end
 %     for d=1:D
 %         fig = figure;
@@ -130,16 +125,18 @@ if print_hist
 %     end
 end
 if check_visual
-    lb = 0;
-    ub = 12;
-    x = linspace(lb,ub,N);
-    y = x;
-    [X,Y] = meshgrid(x,y);
-    figure;
-    surf(X,Y,Z_rbf);
-    ylabel('weight W_1')
-    xlabel('weight W_2')
-    zlabel('Loss')
+    batch_size = K;
+    i_batch = datasample(1:length(C),batch_size,'Replace',false);
+    c_batch = zeros(size(C));
+    c_batch(i_batch) = 1;
+    pyramid_batch = 1;
+    f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
+    %
+    visualize_surf_single(f,100,lb,ub);title('f');
+    visualize_surf_single(f_full_batch,100,lb,ub);title('f full batch');
+    visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
+    visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 end
 %%
 beep;beep;
+disp('Done!');

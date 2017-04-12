@@ -1,9 +1,6 @@
 clear;
-lb = 0;
-ub = 12;
-N = 200;
-x = linspace(lb,ub,N);
-y = x;
+lb = 0;ub = 12;N = 500;
+x = linspace(lb,ub,N);y = x;
 [X,Y] = meshgrid(x,y);
 %%  Ramp Wedge
 % get wedge function
@@ -11,55 +8,60 @@ y = x;
 i_coord = 2;
 offset_i_coord = 8;
 % non-degenerate
-c = [3,3];
-apex = -1;
-lb_pyramid = 2;
-ub_pyramid = 4;
-%
+c = [3,3];apex = -1;lb_pyramid = 2;ub_pyramid = 4;
+% get pyramid
 f_pyramid = @(x) high_D_pyramid(x,c,apex,lb_pyramid,ub_pyramid) + degenerate_wedge(x - offset_i_coord,i_coord) - 1;
 %f = @(x) high_D_pyramid(x,c,apex,lb_pyramid,ub_pyramid) + degenerate_wedge(x - offset_i_coord,i_coord); 
 % plot wedge function
-Z = get_Z_from_meshgrid_f(X,Y,f_pyramid);
-figure;
-surf(X,Y,Z);
-ylabel('weight W_1')
-xlabel('weight W_2')
-zlabel('Loss')
+Z_pyramid = get_Z_from_meshgrid_f(X,Y,f_pyramid);
+% figure;
+% surf(X,Y,Z_pyramid);
+% ylabel('weight W_1');xlabel('weight W_2');zlabel('Loss');
 %% RBF degenerate Wedge
-[ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z ); % X_data = [N, D], Y_data = [N, D_out]
+[ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z_pyramid ); % X_data = [N, D], Y_data = [N, D_out]
 % get RBF function
 D = 2;
 K = 100;
 t = get_centers(K,D,i_coord,offset_i_coord,lb,ub); % K x D
-%t = [t ; c];
-stddev = abs(2)/4;
-beta = 1/(2*stddev^2);
+stddev = abs(2)/4;beta = 1/(2*stddev^2);
 Kern = produce_kernel_matrix_bsxfun(X_data, t, beta); % (N x K)
 C = Kern \ Y_data; % (K x 1)
 tt = sum(t.^2,2)';
 degenerate_rbf_wedge = @(x) exp( -beta*eucledian(x,t,tt) ) * C;
 %% RBF nondegenerate Wedge
-beta_non = beta;
-t_pyramid = c;
+beta_non = beta;t_pyramid = c;
 non_degenerate_rbf_pyramid = @(x) -0.3 * exp( -beta_non * norm(x-t_pyramid,2) );
 %% get loss surface f
-f = @(x) degenerate_rbf_wedge(x) + non_degenerate_rbf_pyramid(x);
-f = @(x) (1/0.3)*f(x);
-f_rbf_loss_surface = f;
+f_rbf_loss_surface = @(x) degenerate_rbf_wedge(x) + non_degenerate_rbf_pyramid(x);
+f_rbf_loss_surface = @(x) (1/0.3)*f_rbf_loss_surface(x);
+%% plot RBF function
+Z_rbf = get_Z_from_meshgrid_f(X,Y,f_rbf_loss_surface);
+% figure;
+% surf(X,Y,Z_rbf);
+% ylabel('weight W_1');xlabel('weight W_2');zlabel('Loss')
 %%
-f_batch = @(x,c_batch,pyramid_batch) exp( -beta*eucledian(x,t,tt) ) * (C.*c_batch)*(1/0.3) +  -0.3*pyramid_batch*non_degenerate_rbf_pyramid(x);
+f_batch = @(x,c_batch,pyramid_batch) exp( -beta*eucledian(x,t,tt) )*(C.*c_batch)*(1/0.3) + -pyramid_batch*exp( -beta_non * norm(x-t_pyramid,2) );
 batch_size = 7;
 i_batch = datasample(1:length(C),batch_size,'Replace',false);
 c_batch = zeros(size(C));
 c_batch(i_batch) = 1;
 pyramid_batch = randi([0 1],1,1);
 f_batch_loss_surface = @(x) f_batch(x,c_batch,pyramid_batch);
-%% plot RBF function
-Z_rbf = get_Z_from_meshgrid_f(X,Y,f_rbf_loss_surface);
-figure;
-surf(X,Y,Z_rbf);
-ylabel('weight W_1')
-xlabel('weight W_2')
-zlabel('Loss')
-%
+% plot
+Z_batch_rbf = get_Z_from_meshgrid_f(X,Y,f_batch_loss_surface);
+% figure;
+% surf(X,Y,Z_batch_rbf);
+% ylabel('weight W_1');xlabel('weight W_2');zlabel('Loss')
+%%
+batch_size = K;
+i_batch = datasample(1:length(C),batch_size,'Replace',false);
+c_batch = zeros(size(C));
+c_batch(i_batch) = 1;
+pyramid_batch = 1;
+f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
 save('rbf_loss_surface_visual');
+%%
+%visualize_surf_single(f,100,lb,ub);title('f');
+visualize_surf_single(f_full_batch,100,lb,ub);title('f full batch');
+visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
+visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
