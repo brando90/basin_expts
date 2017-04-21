@@ -128,7 +128,6 @@ if print_hist
 %         title_str = sprintf('Histogram of W_%d for %d D experiment',d,D);
 %         title(title_str);
 %         if strcmp(Normalization, 'count') == 0
-%             ylim([0,1])
 %         end
 %         if save_figs
 %             f = sprintf('W%d_%dD_A%.2f',d,D,A);
