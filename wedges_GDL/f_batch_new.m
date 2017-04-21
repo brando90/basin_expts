@@ -7,7 +7,8 @@ beta = params.beta;
 t_pyramid = params.t_pyramid;
 beta_non = params.beta_non;
 %
-C_selected = (C.*c_batch)*(1/0.3);
+%C_selected = (C.*c_batch)*(1/0.3);
+C_selected = (C.*c_batch);
 pyramid_batch;
 f_val = exp( -beta*eucledian(x,t,tt) )*C_selected + -pyramid_batch*exp( -beta_non * norm(x-t_pyramid,2) );
 end

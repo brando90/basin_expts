@@ -5,14 +5,14 @@ load('rbf_loss_surface_visual');
 D = 2;
 nbins = 30;
 nbins_g = 100;
-c = 270000; % 270000
+c = 2700; % 270000
 iter = c;
 %iter = c*nbins^D;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-report_freq = 20000;
-visualize_training_surf = 1
+%report_freq = 20000;
+visualize_training_surf = 0
 visualize_freq = report_freq
 %% initialization
 W = 8*ones(1,D);
@@ -30,7 +30,7 @@ gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-batch_size = 59;
+batch_size = 35;
 %% periodicity bound
 B = 12;
 %% histogram
@@ -143,10 +143,11 @@ if check_visual
     c_batch = zeros(size(C));
     c_batch(i_batch) = 1;
     pyramid_batch = 1;
-    f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
+    %f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
+    f_N_batch = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
     %
     visualize_surf_single(f,100,lb,ub);title('f (Last Batch)');
-    visualize_surf_single(f_full_batch,100,lb,ub);title('f full batch');
+    visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
     visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
     visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 end

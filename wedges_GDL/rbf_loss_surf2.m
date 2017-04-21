@@ -21,16 +21,16 @@ Z_pyramid = get_Z_from_meshgrid_f(X,Y,f_pyramid);
 [ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z_pyramid ); % X_data = [N, D], Y_data = [N, D_out]
 % get RBF function
 D = 2;
-K = 30;
+K = 35;
 t = get_centers(K,D,i_coord,offset_i_coord+1,lb,ub); % K x D
 t_ = t;
 %stddev = abs(2)/4;
 stddev = 0.5;
 beta = 1/(2*stddev^2);
+%X_data = X_data(Y_data ~= 0,:);
+%Y_data = Y_data(Y_data ~= 0);
 Kern = produce_kernel_matrix_bsxfun(X_data, t, beta); % (N x K)
-%Y_data = Y_data(Y_data ~= 0)
-%Kern = Kern(Y_data ~= 0)
-C_ = Kern \ Y_data; % (K x 1)
+C_ = Kern \ Y_data % (K x 1)
 C = C_(C_~=0)
 t = t(C_~=0,:);
 K = sum(C_~=0)
