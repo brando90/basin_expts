@@ -21,7 +21,7 @@ Z_pyramid = get_Z_from_meshgrid_f(X,Y,f_pyramid);
 [ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z_pyramid ); % X_data = [N, D], Y_data = [N, D_out]
 % get RBF function
 D = 2;
-K = 35;
+K = 38;
 t = get_centers(K,D,i_coord,offset_i_coord+1,lb,ub); % K x D
 stddev = abs(2)/4;beta = 1/(2*stddev^2);
 Kern = produce_kernel_matrix_bsxfun(X_data, t, beta); % (N x K)
@@ -82,3 +82,6 @@ visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');
 visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
+%%
+fprintf('positive C > 0: %s\n', num2str(sum(C>0)));
+fprintf('negative C < 0: %s\n', num2str(sum(C<0)));

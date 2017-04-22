@@ -5,14 +5,15 @@ load('rbf_loss_surface_visual');
 D = 2;
 nbins = 30;
 nbins_g = 100;
-c = 2700; % 270000
+c = 270000; % 270000
 iter = c;
 %iter = c*nbins^D;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-%report_freq = 20000;
+report_freq = 20000;
 visualize_training_surf = 0
+visualize_training_surf = 1
 visualize_freq = report_freq
 %% initialization
 W = 8*ones(1,D);
@@ -30,7 +31,7 @@ gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-batch_size = 35;
+batch_size = 12
 %% periodicity bound
 B = 12;
 %% histogram
@@ -50,6 +51,7 @@ tic
 W_history(1,:) = W;
 g_history(1,:) = zeros(size(W));
 W_hist_counts = zeros(size(edges)-[0,1]);
+fprintf('batch_size: %s\n',num2str(batch_size))
 fprintf('W_init: %s\n', num2str(W,'%+.5f'));
 for i=2:iter+1
     if batch_size == K+1 % choose all data points
@@ -64,12 +66,13 @@ for i=2:iter+1
         c_batch = zeros([length(C)+1,1]);
         c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
         pyramid_batch = c_batch(end);
+        %pyramid_batch = 0;
         c_batch = c_batch(1:end-1,:);
         pyramid_batch_history(i) = pyramid_batch;
     end
     %f = @(x) f_batch(x,c_batch,pyramid_batch);
     f = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
-    params.lb = lb;params.ub = ub; params.i = i; params.f_rbf_loss_surface = f_rbf_loss_surface;params.f = f;
+    %params.lb = lb;params.ub = ub; params.i = i; params.f_rbf_loss_surface = f_rbf_loss_surface;params.f = f;
     %f = f_pyramid;
     if visualize_training_surf && mod(i,visualize_freq) == 0
         visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
@@ -87,16 +90,16 @@ for i=2:iter+1
     [W_hist_counts_current, edges2] = histcounts(W,edges);
     W_hist_counts = W_hist_counts + W_hist_counts_current;
     if (mod(i,report_freq) == 0 && report_freq ~= -1) || i == 2
-       fprintf('i : %d, g : %s, eta*g : %s, W: %s \n',i, num2str(g,'%+.5f'), num2str(eta*g,'%+.5f'),num2str(W,'%+.5f') );
+       fprintf('i : %d | g : %s | eta*g : %s | gdl_eps: %s | A*gdl_eps %s | W: %s | batch_size: %s \n',i, num2str(g,'%+.5f'), num2str(eta*g,'%+.5f'),num2str(gdl_eps,'%+.5f'),num2str(A*gdl_eps,'%+.5f'),num2str(W,'%+.5f'),num2str(batch_size,'%+.5f') );
     end
 end
 fprintf('sum(pyramid_batch_history) = %f \n',sum(pyramid_batch_history)/iter);
 elapsedTime = toc;
-fprintf('\nD: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,nbins,D, iter);
+fprintf('D: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,nbins,D, iter);
 fprintf('elapsedTime seconds: %fs, minutes: %fm, hours: %fh \n', elapsedTime,elapsedTime/60,elapsedTime/(60*60));
 %W_history
 %%
-save(filename)
+%save(filename)
 %%
 if print_hist
     if D==2
