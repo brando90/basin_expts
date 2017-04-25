@@ -5,35 +5,40 @@ load('rbf_loss_surface_visual');
 D = 2;
 nbins = 30;
 nbins_g = 100;
-c = 270000; % 270000
-iter = c;
-%iter = c*nbins^D;
+cc = 1*2700000; % 270000
+iter = cc;
+%iter = cc*nbins^D;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-report_freq = 20000;
+report_freq = 2000;
 visualize_training_surf = 0
-visualize_training_surf = 1
+%visualize_training_surf = 1
 visualize_freq = report_freq
 %% initialization
-W = 8*ones(1,D);
+%W = 8*ones(1,D);
 %W = [3,3];
+W = (offset_i_coord + 1)*ones(1,D);
+W = c;
+%W = [1.7,4]
 W_mu_noise = 0;
 W_std_noise = 0.1;
 W_eps = normrnd(W_mu_noise,W_std_noise,[1,D]);
 W = W + W_eps;
 %% GD params
-g_eps = 0.25; % size of step difference
-eta = 1.0; % step size
+g_eps = 3.25; % size of step difference
+%g_eps = 0.01; % size of step difference
+eta = 2*100; % step size
 %% Langevian/noise params
 A = 0.2;
+A = 0.0;
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-batch_size = 12
+batch_size = 50
 %% periodicity bound
-B = 12;
+B = 8;
 %% histogram
 print_hist = 1;
 W_history = zeros(iter,D);
@@ -51,6 +56,7 @@ tic
 W_history(1,:) = W;
 g_history(1,:) = zeros(size(W));
 W_hist_counts = zeros(size(edges)-[0,1]);
+fprintf('sum(C<0) %s \nsum(C>0) %s\n', num2str(sum(C<0)),num2str(sum(C>0)));
 fprintf('batch_size: %s\n',num2str(batch_size))
 fprintf('W_init: %s\n', num2str(W,'%+.5f'));
 for i=2:iter+1

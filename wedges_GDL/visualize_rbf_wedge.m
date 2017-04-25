@@ -1,14 +1,14 @@
 clear;
-lb = 0;ub = 12;N = 200;
+lb = 0;ub = 8;N = 200;
 x = linspace(lb,ub,N);y = x;
 [X,Y] = meshgrid(x,y);
 %%  Ramp Wedge
 % get wedge function
 % degenerate params
 i_coord = 2;
-offset_i_coord = 8;
+offset_i_coord = 4.67;
 % non-degenerate
-c = [3,3];apex = -1;lb_pyramid = 2;ub_pyramid = 4;
+c = [1.7,1.7];apex = -1;lb_pyramid = 2;ub_pyramid = 4;
 % get pyramid
 f_pyramid = @(x) high_D_pyramid(x,c,apex,lb_pyramid,ub_pyramid) + degenerate_wedge(x - offset_i_coord,i_coord) - 1;
 %f = @(x) high_D_pyramid(x,c,apex,lb_pyramid,ub_pyramid) + degenerate_wedge(x - offset_i_coord,i_coord); 
@@ -18,14 +18,44 @@ Z_pyramid = get_Z_from_meshgrid_f(X,Y,f_pyramid);
 % surf(X,Y,Z_pyramid);
 % ylabel('weight W_1');xlabel('weight W_2');zlabel('Loss');
 %% RBF degenerate Wedge
-[ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z_pyramid ); % X_data = [N, D], Y_data = [N, D_out]
+%[ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z_pyramid ); % X_data = [N, D], Y_data = [N, D_out]
 % get RBF function
 D = 2;
-K = 38;
-t = get_centers(K,D,i_coord,offset_i_coord+1,lb,ub); % K x D
+K = 1000;
+t = get_centers(K,D,i_coord,offset_i_coord+1,lb-1.,ub+1); % K x D
+%%
+%[K,] = size(t);
+dip_height = -1;
+X_data = t;
+Y_data = dip_height*ones(1,K);
+%%
 stddev = abs(2)/4;beta = 1/(2*stddev^2);
 Kern = produce_kernel_matrix_bsxfun(X_data, t, beta); % (N x K)
-C_ = Kern \ Y_data % (K x 1)
+C_ = dip_height*ones(K,1)/124;
+%C_ = Kern \ Y_data % (K x 1)
+%%
+% indices = Y_data ~= 0;
+% Kern = Kern(indices,:);
+% Y_data = Y_data(indices);
+% 
+% [N, ~] = size(Kern);
+% f = zeros(K,1);
+% %A = Kern;b = 100*ones(N,1);
+% A = zeros(1,K);b = zeros(1,1);
+% Aeq = Kern; beq = Y_data;
+% lb_lp = -inf*ones(K,1); ub_lp = 0.001*ones(K,1);
+% %C_ = linprog(f,A,b,Aeq,beq,lb_lp,ub_lp)
+% C_ = linprog(f,A,b,Aeq,beq)
+%%
+% [N,~] = size(Kern);
+% H = Kern'*Kern;
+% f = -2*Y_data'*Kern;
+% A = zeros(1,K);b = zeros(1,1);
+% %Aeq = zeros(1,K);beq = zeros(1,1);
+% Aeq = Kern;beq = -1*ones(N,1);
+% lb_lp = -inf*ones(K,1); ub_lp = 0.0*ones(K,1);
+% C_ = quadprog(H,f,A,b,Aeq,beq,lb_lp,ub_lp)
+%%
 C = C_(C_~=0);
 t = t(C_~=0,:);
 K = sum(C_~=0)
@@ -74,10 +104,12 @@ c_batch(i_batch) = 1;
 pyramid_batch = 1;
 %f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
 f_M_batch = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
-save('rbf_loss_surface_visual');
+save('rbf_loss_surface_visual2');
 %%
 %visualize_surf_single(f,100,lb,ub);title('f');
 %visualize_surf_single(f_rbf_loss_surface_,100,lb,ub);title('f RBF loss surface original');
+%fprintf('f_height: %s\n', num2str(f_N_batch(t(50,:))) ) %  6.0771    5.6700
+fprintf('f_height: %s\n', num2str(f_N_batch(t(70,:))) )
 visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');
