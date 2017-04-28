@@ -7,8 +7,11 @@ x = linspace(lb,ub,N);y = x;
 % degenerate params
 i_coord = 2;
 offset_i_coord = 4.67;
+%offset_i_coord = 8;
 % non-degenerate
-c = [1.7,1.7];apex = -1;lb_pyramid = 2;ub_pyramid = 4;
+c = [1.7,1.7];
+%c = [3,3];
+apex = -1;lb_pyramid = 2;ub_pyramid = 4;
 % get pyramid
 f_pyramid = @(x) high_D_pyramid(x,c,apex,lb_pyramid,ub_pyramid) + degenerate_wedge(x - offset_i_coord,i_coord) - 1;
 %f = @(x) high_D_pyramid(x,c,apex,lb_pyramid,ub_pyramid) + degenerate_wedge(x - offset_i_coord,i_coord); 
@@ -21,17 +24,18 @@ Z_pyramid = get_Z_from_meshgrid_f(X,Y,f_pyramid);
 %[ X_data,Y_data] = make_data_from_meshgrid( X,Y,Z_pyramid ); % X_data = [N, D], Y_data = [N, D_out]
 % get RBF function
 D = 2;
-K = 1000;
-t = get_centers(K,D,i_coord,offset_i_coord+1,lb-1.,ub+1); % K x D
+K = 2000;
+t = get_centers(K,D,i_coord,offset_i_coord+1,lb-0.95,ub+0.95); % K x D
+%t = get_centers(K,D,i_coord,offset_i_coord+1,lb,ub); % K x D
 %%
 %[K,] = size(t);
 dip_height = -1;
-X_data = t;
-Y_data = dip_height*ones(1,K);
+X_data = t;Y_data = dip_height*ones(1,K);
 %%
 stddev = abs(2)/4;beta = 1/(2*stddev^2);
 Kern = produce_kernel_matrix_bsxfun(X_data, t, beta); % (N x K)
-C_ = dip_height*ones(K,1)/124;
+C_ = dip_height*ones(K,1)/252;
+%%
 %C_ = Kern \ Y_data % (K x 1)
 %%
 % indices = Y_data ~= 0;
@@ -109,11 +113,11 @@ save('rbf_loss_surface_visual2');
 %visualize_surf_single(f,100,lb,ub);title('f');
 %visualize_surf_single(f_rbf_loss_surface_,100,lb,ub);title('f RBF loss surface original');
 %fprintf('f_height: %s\n', num2str(f_N_batch(t(50,:))) ) %  6.0771    5.6700
-fprintf('f_height: %s\n', num2str(f_N_batch(t(70,:))) )
+%fprintf('f_height: %s\n', num2str(f_N_batch(t(70,:))) )
 visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');
-visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
+%visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
 %%
 fprintf('positive C > 0: %s\n', num2str(sum(C>0)));
 fprintf('negative C < 0: %s\n', num2str(sum(C<0)));

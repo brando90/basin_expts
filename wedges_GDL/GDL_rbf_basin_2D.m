@@ -1,17 +1,17 @@
 clear;
 %% load RBF wedge loss surface
-load('rbf_loss_surface_visual');
+load('rbf_loss_surface_visual2');
 %% computation time params
 D = 2;
 nbins = 30;
 nbins_g = 100;
-cc = 1*2700000; % 270000
+cc = 1*270000; % 270000
 iter = cc;
 %iter = cc*nbins^D;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-report_freq = 2000;
+report_freq = 200;
 visualize_training_surf = 0
 %visualize_training_surf = 1
 visualize_freq = report_freq
@@ -26,17 +26,20 @@ W_std_noise = 0.1;
 W_eps = normrnd(W_mu_noise,W_std_noise,[1,D]);
 W = W + W_eps;
 %% GD params
-g_eps = 3.25; % size of step difference
-%g_eps = 0.01; % size of step difference
-eta = 2*100; % step size
+%g_eps = 3.25; % size of step difference
+g_eps = 0.95;
+%g_eps = 0.25; % size of step difference
+eta = 1*14; % step size
+%eta = 1; % step size
+%eta = 1; % step size
 %% Langevian/noise params
-A = 0.2;
 A = 0.0;
+%A = 0.2;
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-batch_size = 50
+batch_size = 500
 %% periodicity bound
 B = 8;
 %% histogram
@@ -77,7 +80,8 @@ for i=2:iter+1
         pyramid_batch_history(i) = pyramid_batch;
     end
     %f = @(x) f_batch(x,c_batch,pyramid_batch);
-    f = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
+    %f = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
+    f = @(x) f_batch_new(mod(x,B),c_batch,pyramid_batch,params);
     %params.lb = lb;params.ub = ub; params.i = i; params.f_rbf_loss_surface = f_rbf_loss_surface;params.f = f;
     %f = f_pyramid;
     if visualize_training_surf && mod(i,visualize_freq) == 0
@@ -86,17 +90,18 @@ for i=2:iter+1
     end
     %
     g = CalcNumericalFiniteDiff(W,f,g_eps);
+    %g = min(g,8);
     gdl_eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
     %
-    %W = mod(W - eta*g, B);
     W = mod(W - eta*g + A*gdl_eps, B);
     %2D
     W_history(i,:) = W;
-    g_history(i,:) = g;
+    g_history(i,:) = eta*g;
     [W_hist_counts_current, edges2] = histcounts(W,edges);
     W_hist_counts = W_hist_counts + W_hist_counts_current;
     if (mod(i,report_freq) == 0 && report_freq ~= -1) || i == 2
-       fprintf('i : %d | g : %s | eta*g : %s | gdl_eps: %s | A*gdl_eps %s | W: %s | batch_size: %s \n',i, num2str(g,'%+.5f'), num2str(eta*g,'%+.5f'),num2str(gdl_eps,'%+.5f'),num2str(A*gdl_eps,'%+.5f'),num2str(W,'%+.5f'),num2str(batch_size,'%+.5f') );
+       %fprintf('i : %d | g : %s | eta*g : %s | gdl_eps: %s | A*gdl_eps %s | W: %s | batch_size: %s \n',i, num2str(g,'%+.5f'), num2str(eta*g,'%+.5f'),num2str(gdl_eps,'%+.5f'),num2str(A*gdl_eps,'%+.5f'),num2str(W,'%+.5f'),num2str(batch_size,'%+.5f') );
+       fprintf('i : %d | g : %s | eta*g : %s | A*gdl_eps %s | W: %s | batch_size: %s \n',i, num2str(g,'%+.5f'), num2str(eta*g,'%+.5f'),num2str(A*gdl_eps,'%+.5f'),num2str(W,'%+.5f'),num2str(batch_size,'%+.5f') );
     end
 end
 fprintf('sum(pyramid_batch_history) = %f \n',sum(pyramid_batch_history)/iter);
@@ -113,6 +118,7 @@ if print_hist
         fig = figure;
         hist3(W_history,[nbins,nbins]);
         ylabel('Weight W_2');xlabel('Weight W_1');
+        %xlim([0,B]);ylim([0,B]);
         zlabel(sprintf('Normalization: %s',Normalization));
         f_name=sprintf('W_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
         %% plot learning curve
@@ -157,7 +163,7 @@ if check_visual
     %
     visualize_surf_single(f,100,lb,ub);title('f (Last Batch)');
     visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
-    visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
+    %visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
     visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 end
 %%

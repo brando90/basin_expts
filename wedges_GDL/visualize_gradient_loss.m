@@ -2,7 +2,7 @@ clear;
 %% load RBF wedge loss surface
 load('rbf_loss_surface_visual2');
 %% SGD/MGD params 
-batch_size = 600;
+batch_size = 550;
 %% periodicity bound
 B = 8;
 %% W coordiante
@@ -16,10 +16,10 @@ pyramid_batch = c_batch(end);
 %pyramid_batch = 0;cd 
 c_batch = c_batch(1:end-1,:);
 %%
-g_eps = 3.25;
+g_eps = 2.5;
 f = @(x) f_batch_new(mod(x,B),c_batch,pyramid_batch,params);
-for i=1:2
-    g_original = @(W) dVdW(W,f,i,0.000001);
+for i=1:1
+    g_original = @(W) dVdW(W,f,i,0.0000001);
     g = @(W) dVdW(W,f,i,g_eps);
-    visualize_surf( g,i,lb,ub,100,g_original)
+    visualize_surf2( g,i,lb,ub,100,g_original,batch_size,g_eps)
 end
