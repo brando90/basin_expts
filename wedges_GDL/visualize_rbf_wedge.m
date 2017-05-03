@@ -22,7 +22,7 @@ center_pyramid = [1.7,1.7];
 t_p = center_pyramid + normrnd(0,0.05,[K_p,2]);
 tt_p = sum(t_p.^2,2)';
 % get C's weights
-C_p = -1*ones(K_p,1)/252;
+C_p = -1*ones(K_p,1)/10;
 % get Gaussian precision
 stddev_p = 0.5;
 beta_p = 1/(2*stddev_p^2);
@@ -34,10 +34,10 @@ f_N_batch = @(x) f_batch_new(x,ind_mini_batch,params);
 %% RBF M batch
 batch_size = 10;
 i_batch = datasample(1:length([C;C_p]),batch_size,'Replace',false);
-ind_mini_batch = zeros(size(C));
-c_batch(i_batch) = 1;
+ind_mini_batch = zeros(size([C;C_p]));
+ind_mini_batch(i_batch) = 1;
 f_M_batch = @(x) f_batch_new(x,ind_mini_batch,params);
 %save('rbf_loss_surface_visual2');
 %%
-%visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
+visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');
