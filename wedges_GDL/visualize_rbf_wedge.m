@@ -16,13 +16,13 @@ C = -1*ones(K,1)/252;
 stddev = 0.5;
 beta = 1/(2*stddev^2);
 %% RBF nondegenerate Wedge
-K_p = 10; % number of centers pyramid
+K_p = 50; % number of centers pyramid
 % get centers
 center_pyramid = [1.7,1.7];
 t_p = center_pyramid + normrnd(0,0.05,[K_p,2]);
 tt_p = sum(t_p.^2,2)';
 % get C's weights
-C_p = -1*ones(K_p,1)/10;
+C_p = -1*ones(K_p,1)/K_p;
 % get Gaussian precision
 stddev_p = 0.5;
 beta_p = 1/(2*stddev_p^2);
