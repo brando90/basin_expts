@@ -20,16 +20,16 @@ visualize_freq = report_freq
 %W = [3,3];
 W = (offset_i_coord + 1)*ones(1,D);
 W = c;
-%W = [1.7,4]
+W = [1.7,4]
 W_mu_noise = 0;
-W_std_noise = 0.1;
+W_std_noise = 0.01;
 W_eps = normrnd(W_mu_noise,W_std_noise,[1,D]);
 W = W + W_eps;
 %% GD params
 %g_eps = 3.25; % size of step difference
-g_eps = 0.95;
+g_eps = 0.0000001;
 %g_eps = 0.25; % size of step difference
-eta = 1*14; % step size
+eta = 1; % step size
 %eta = 1; % step size
 %eta = 1; % step size
 %% Langevian/noise params
@@ -39,7 +39,7 @@ gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-batch_size = 500
+batch_size = 300
 %% periodicity bound
 B = 8;
 %% histogram
@@ -89,7 +89,8 @@ for i=2:iter+1
         %visualize_surf( params.f,params.i,params.lb,params.ub,100,params.f_rbf_loss_surface)
     end
     %
-    g = CalcNumericalFiniteDiff(W,f,g_eps);
+    %g = CalcNumericalFiniteDiff(W,f,g_eps);
+    g = numerical_gradient(W,f,g_eps);
     %g = min(g,8);
     gdl_eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
     %

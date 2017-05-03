@@ -8,10 +8,10 @@ for d1=1:D1
         e(d1,d2) = eps;
         f_e1 = f(W+e);
         f_e2 = f(W-e);
-        %numerical_derivative = (f_e1 - f_e2)/(2*eps);
-        %dU(d1,d2) = numerical_derivative
-        numerical_difference = f_e1 - f_e2;
-        dU(d1,d2) = numerical_difference;
+        numerical_derivative = (f_e1 - f_e2)/(2*eps);
+        dU(d1,d2) = numerical_derivative;
+        %numerical_difference = f_e1 - f_e2;
+        %dU(d1,d2) = numerical_difference;
     end
 end
 end

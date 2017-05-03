@@ -11,8 +11,8 @@ for ii = 1:numElmnts
     vInputPoint(ii) = refInVal + epsVal;
 
     % Compute Numerical Gradient
-    %vNumericalGrad(ii) = (hInputFunc(vInputPoint) - refVal) / epsVal;
-    vNumericalGrad(ii) = (hInputFunc(vInputPoint) - refVal);
+    vNumericalGrad(ii) = (hInputFunc(vInputPoint) - refVal) / epsVal;
+    %vNumericalGrad(ii) = (hInputFunc(vInputPoint) - refVal);
 
     % Reset the perturbation vector
     vInputPoint(ii) = refInVal;

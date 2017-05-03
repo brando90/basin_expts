@@ -4,7 +4,8 @@ x = linspace(lb,ub,N);
 y = x;
 [X,Y] = meshgrid(x,y);
 %
-figure;
+%figure;
+figure('units','normalized','position',[.1 .1 .8 .8])
 title( 'Loss '+string(i) )
 
 a = subplot(1,2,1);
