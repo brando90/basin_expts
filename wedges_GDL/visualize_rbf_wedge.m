@@ -37,7 +37,7 @@ i_batch = datasample(1:length([C;C_p]),batch_size,'Replace',false);
 ind_mini_batch = zeros(size([C;C_p]));
 ind_mini_batch(i_batch) = 1;
 f_M_batch = @(x) f_batch_new(x,ind_mini_batch,params);
-%save('rbf_loss_surface_visual2');
+save('rbf_loss_surface_visual2');
 %%
 visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');

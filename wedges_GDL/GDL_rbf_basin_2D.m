@@ -5,7 +5,7 @@ load('rbf_loss_surface_visual2');
 D = 2;
 nbins = 30;
 nbins_g = 100;
-cc = 1*270000; % 270000
+cc = 1*2700; % 270000
 iter = cc;
 %iter = cc*nbins^D;
 %% GDL, SGD & mdl params
@@ -19,7 +19,6 @@ visualize_freq = report_freq
 %W = 8*ones(1,D);
 %W = [3,3];
 W = (offset_i_coord + 1)*ones(1,D);
-W = c;
 W = [1.7,4]
 W_mu_noise = 0;
 W_std_noise = 0.01;
@@ -64,26 +63,14 @@ fprintf('batch_size: %s\n',num2str(batch_size))
 fprintf('W_init: %s\n', num2str(W,'%+.5f'));
 for i=2:iter+1
     if batch_size == K+1 % choose all data points
-        c_batch = ones(size(C));
-        pyramid_batch = 1;
+        ind_mini_batch = ones(length([C;C_p]),1);
     else
-%         i_batch = datasample(1:length(C),batch_size,'Replace',false); % chooses which data points to put in the mini-batch
-%         c_batch = zeros(size(C));
-%         c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
-%         pyramid_batch = randi([0 1],1,1);
-        i_batch = datasample(1:length(C)+1,batch_size+1,'Replace',false); % chooses which data points to put in the mini-batch
-        c_batch = zeros([length(C)+1,1]);
-        c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
-        pyramid_batch = c_batch(end);
-        %pyramid_batch = 0;
-        c_batch = c_batch(1:end-1,:);
-        pyramid_batch_history(i) = pyramid_batch;
+        batch_size = 10;
+        i_batch = datasample(1:length([C;C_p]),batch_size,'Replace',false);
+        ind_mini_batch = zeros(size([C;C_p]));
+        ind_mini_batch(i_batch) = 1;
     end
-    %f = @(x) f_batch(x,c_batch,pyramid_batch);
-    %f = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
-    f = @(x) f_batch_new(mod(x,B),c_batch,pyramid_batch,params);
-    %params.lb = lb;params.ub = ub; params.i = i; params.f_rbf_loss_surface = f_rbf_loss_surface;params.f = f;
-    %f = f_pyramid;
+    f = @(x) f_batch_new(mod(x,B),ind_mini_batch,params);
     if visualize_training_surf && mod(i,visualize_freq) == 0
         visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
         %visualize_surf( params.f,params.i,params.lb,params.ub,100,params.f_rbf_loss_surface)
@@ -107,7 +94,7 @@ for i=2:iter+1
 end
 fprintf('sum(pyramid_batch_history) = %f \n',sum(pyramid_batch_history)/iter);
 elapsedTime = toc;
-fprintf('D: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,nbins,D, iter);
+fprintf('D: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,t_p,t_p,nbins,D, iter);
 fprintf('elapsedTime seconds: %fs, minutes: %fm, hours: %fh \n', elapsedTime,elapsedTime/60,elapsedTime/(60*60));
 %W_history
 %%
@@ -160,12 +147,12 @@ if check_visual
     c_batch(i_batch) = 1;
     pyramid_batch = 1;
     %f_full_batch = @(x) f_batch(x,c_batch,pyramid_batch);
-    f_N_batch = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
+    %f_N_batch = @(x) f_batch_new(x,c_batch,pyramid_batch,params);
     %
     visualize_surf_single(f,100,lb,ub);title('f (Last Batch)');
     visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
     %visualize_surf_single(f_pyramid,100,lb,ub);title('f pyramid');
-    visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
+    %visualize_surf_single(f_rbf_loss_surface,100,lb,ub);title('f RBF loss surface');
 end
 %%
 for i=1:10
