@@ -2,7 +2,7 @@ clear;
 %% load RBF wedge loss surface
 load('rbf_loss_surface_visual2');
 %%
-nb_expts = 5;
+nb_expts = 30;
 W_all_name = ['tmp_W_hist' num2str(nb_expts)]
 %filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
 root = ''
@@ -17,25 +17,25 @@ D = 2;
 nbins = 30;
 nbins_g = 100;
 %cc = 1*4; % 270000
-cc = 1*270; % 270000
+cc = 1*270000; % 270000
 iter = cc;
 %iter = cc*nbins^D;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-report_freq = 150;
+%report_freq = 150;
 visualize_training_surf = 0
 %visualize_training_surf = 1
 visualize_freq = report_freq
 %% initialization
 W = [0,0];
-W = (offset_i_coord + 1)*ones(1,D);
+%W = (offset_i_coord + 1)*ones(1,D);
 %W = [ 6.0,1.67 ];
-W = t_p(1,:);
+%W = t_p(1,:);
 %W = W + normrnd(0,0.01,[1,D]);
-init_W = @(W,B) W;
+%init_W = @(W,B) W;
 %init_W = @(W,B) W + normrnd(0,0.01,[1,D]);
-%init_W = @(W,B) W+B*rand([1,2]); % generate a random vector 1x2 in interval [0,B]
+init_W = @(W,B) W+B*rand([1,2]); % generate a random vector 1x2 in interval [0,B]
 %% GD params
 %g_eps = 3.25; % size of step difference
 g_eps = 0.0000001;
