@@ -2,21 +2,22 @@ clear;
 %% load RBF wedge loss surface
 load('rbf_loss_surface_visual2');
 %%
-nb_expts = 3;
-W_all_name = 'W_hist30'
+nb_expts = 5;
+W_all_name = ['tmp_W_hist' num2str(nb_expts)]
 %filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
 root = ''
-%rbf_expt = 'rbf_expt'
-%root = ['/Users/brandomiranda/home_simulation_research/simulation_results_scripts/' rbf_expt]
-%root = ['/Users/brandomiranda/home_simulation_research/' rbf_expt]
-%mkdir(root)
+rbf_expt = 'rbf_expt/'
+%home = '/Users/brandomiranda'
+home = '~'
+root = [home '/home_simulation_research/simulation_results_scripts/' rbf_expt]
+mkdir(root)
 w_all_path = [root W_all_name]
 %% computation time params
 D = 2;
 nbins = 30;
 nbins_g = 100;
 %cc = 1*4; % 270000
-cc = 1*270000; % 270000
+cc = 1*270; % 270000
 iter = cc;
 %iter = cc*nbins^D;
 %% GDL, SGD & mdl params
@@ -42,8 +43,8 @@ g_eps = 0.0000001;
 %eta = 15.4; % step size
 eta = 15.4; % step size
 %% Langevian/noise params
-A = 0.01;
-%A = 0;
+%A = 0.01;
+A = 0;
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
@@ -113,6 +114,14 @@ elapsedTime = toc;
 fprintf('D: %d, nbins: %f, iter=cc*nbins^D=%d*%d^%d = %d \n',D,nbins,cc,nbins,D, iter);
 fprintf('elapsedTime seconds: %fs, minutes: %fm, hours: %fh \n', elapsedTime,elapsedTime/60,elapsedTime/(60*60));
 %%
+hp_str = strrep(sprintf('_%dD_eta%.2f_bs%d_A%.3f',D,eta,batch_size,A),'.','p')
+w_all_path=[w_all_path hp_str];
+if A == 0
+   W_all_name = [w_all_path '_SGD']
+else
+   W_all_name = [W_all_name '_SGDL']
+end
+%%
 save(w_all_path)
 %%
 if print_hist && expt_n == 1
@@ -154,3 +163,9 @@ for i=1:10
     beep;beep;beep;
 end
 disp('Done!');
+%sendmail('Internet','brando90@mit.edu','DONE JOB');
+%sendmail('brando90@mit.edu','DONE JOB');
+%mail = 'rene_sax14@yahoo.com'; %Your Yahoo email address
+%password = 'asd';  %Your Yahoo password
+%setpref('Internet','SMTP_Server','smtp.mail.yahoo.com');
+%sendmail('brando90@mit.edu','DONE JOB');
