@@ -1,15 +1,14 @@
 clear;
 %% load RBF wedge loss surface
 load('rbf_loss_surface_visual2');
-%%
-nb_expts = 30;
-W_all_name = ['tmp_W_hist' num2str(nb_expts)]
 %filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
-root = ''
+%%
+nb_expts = 30
+W_all_name = ['tmp_W_hist' num2str(nb_expts)]
 rbf_expt = 'rbf_expt/'
-%home = '/Users/brandomiranda'
-home = '~'
-root = [home '/home_simulation_research/simulation_results_scripts/' rbf_expt]
+%
+root = ''
+root = ['~' '/home_simulation_research/simulation_results_scripts/' rbf_expt]
 mkdir(root)
 w_all_path = [root W_all_name]
 %% computation time params
@@ -20,6 +19,8 @@ nbins_g = 100;
 cc = 1*270000; % 270000
 iter = cc;
 %iter = cc*nbins^D;
+%% periodicity bound
+B = 8;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
@@ -43,15 +44,13 @@ g_eps = 0.0000001;
 %eta = 15.4; % step size
 eta = 15.4; % step size
 %% Langevian/noise params
-%A = 0.01;
-A = 0;
+A = 0.01;
+%A = 0;
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
 batch_size = 10;
-%% periodicity bound
-B = 8;
 %% display option
 print_hist = 1;
 save_figs = 1;
