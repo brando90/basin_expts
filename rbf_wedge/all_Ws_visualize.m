@@ -1,6 +1,11 @@
 clear;
 %
-load('all_Ws.mat');
+rbf_expt = 'rbf_expt/'
+root = ['~' '/home_simulation_research/simulation_results_scripts/' rbf_expt];
+%W_all_name = 'all_Ws.mat'
+W_all_name = 'tmp4_W_hist30_2D_eta10p00_bs115_A0p100.mat';
+w_all_path = [root W_all_name]
+load(w_all_path);
 %%
 [iter,D,nb_expts] = size(all_Ws)
 %%
@@ -9,15 +14,18 @@ load('all_Ws.mat');
 Normalization = 'count';
 nbins = 30;
 for i=1:1
-    W_history = all_Ws(:,:,i);
+    %W_history = all_Ws(:,:,i);
     %W_history = reshape(all_Ws,[iter*nb_expts,D]);
     %all_Ws = all_Ws(:,:,1:2);
-    %W_history = reshape(all_Ws,[iter*2,D]);
+    %W_history = reshape(all_WsxzV,[iter*2,D]);
     %W_history = [all_Ws(:,:,1) ; all_Ws(:,:,2) ];
     W_history = all_Ws(:,:,1);
-    for j=2:nb_expts
+    for j=2:3
         W_history = [W_history ; all_Ws(:,:,j)];
     end
+    %sum(sum(W_history > 8) )
+    %sum( sum( mod( W_history, 8) > 8 ) )
+    %W_history = mod( W_history, 8);
     if D==2
         %% plot W histogram
         fig = figure;

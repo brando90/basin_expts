@@ -1,29 +1,25 @@
 clear;
 %% load RBF wedge loss surface
 load('rbf_loss_surface_visual2');
-%% SGD/MGD params 
-batch_size = 300;
 %% periodicity bound
 B = 8;
-%% W coordiante
-%i = 1;
-%i = 2;
+%% mini-batch
+batch_size = 300;
+batch_size = length([C;C_p]);
+i_batch = datasample(1:length([C;C_p]),batch_size,'Replace',false);
+ind_mini_batch = zeros(size([C;C_p]));
+ind_mini_batch(i_batch) = 1;
 %%
-i_batch = datasample(1:length(C)+1,batch_size+1,'Replace',false); % chooses which data points to put in the mini-batch
-c_batch = zeros([length(C)+1,1]);
-c_batch(i_batch) = 1; % sets to 1 the data points to consider in the mini-batch
-pyramid_batch = c_batch(end);
-%pyramid_batch = 0;cd 
-c_batch = c_batch(1:end-1,:);
+eta = 4;
 %%
-g_eps_list = [1.00];
+g_eps_list = [1.0];
 %g_eps_list = linspace(0.01,4,1);
-f = @(x) f_batch_new(mod(x,B),c_batch,pyramid_batch,params);
+f = @(x) f_batch_new(mod(x,B),ind_mini_batch,params);
+f = @(x) f_batch_new(x,ind_mini_batch,params);
 for g_eps = g_eps_list
-    %g_eps = 
     for i=1:2
-        g_original = @(W) dVdW(W,f,i,0.0000001);
-        g = @(W) dVdW(W,f,i,g_eps);
+        g_original = @(W) eta*dVdW(W,f,i,0.00000001)/batch_size;
+        g = @(W) eta*dVdW(W,f,i,g_eps)/batch_size;
         visualize_surf2( g,i,lb,ub,100,g_original,batch_size,g_eps)
     end
 end

@@ -11,28 +11,28 @@ iter = cc;
 %% GDL, SGD & mdl params
 check_visual = 1
 report_freq = -1;
-report_freq = 200;
+report_freq = 150;
 visualize_training_surf = 0
 %visualize_training_surf = 1
 visualize_freq = report_freq
 %% initialization
 %W = (offset_i_coord + 1)*ones(1,D);
-W = [1.7,4];
+%W = [1.7,4];
 W = t_p(1,:);
 W = W + normrnd(0,0.01,[1,D]);
 %% GD params
 %g_eps = 3.25; % size of step difference
 g_eps = 0.0000001;
 %g_eps = 0.25; % size of step difference
-eta = 10; % step size
+eta = 100; % step size
 %% Langevian/noise params
-A = 0.0;
-%A = 0.2;
+%A = 0.01;
+A = 0;
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-batch_size = 30
+batch_size = 10;
 %% periodicity bound
 B = 8;
 %% histogram
@@ -63,13 +63,15 @@ for i=2:iter+1
     nb_p = sum(i_batch > length(C) );
     pyramid_batch_history(i) = nb_p; % counts how many indices from the batch are from the sharp non-degenerate wedge
     %% f_M
-    f = @(x) f_batch_new(mod(x,B),ind_mini_batch,params);
+    %f = @(x) f_batch_new(mod(x,B),ind_mini_batch,params);
+    f = @(x) f_batch_new(x,ind_mini_batch,params);
     if visualize_training_surf && mod(i,visualize_freq) == 0
         visualize_surf( f,i,lb,ub,100,f_rbf_loss_surface)
         %visualize_surf( params.f,params.i,params.lb,params.ub,100,params.f_rbf_loss_surface)
     end
     %% get gradient (or finite diff) and noise
     g = numerical_gradient(W,f,g_eps);
+    %g = g/batch_size;
     gdl_eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
     %% SGD(L) update
     W = mod(W - eta*g + A*gdl_eps, B);
@@ -93,25 +95,35 @@ fprintf('elapsedTime seconds: %fs, minutes: %fm, hours: %fh \n', elapsedTime,ela
 %%
 if print_hist
     if D==2
-        %% plot W_history
+        %% plot W histogram
         fig = figure;
         hist3(W_history,[nbins,nbins]);
         ylabel('Weight W_2');xlabel('Weight W_1');
         %xlim([0,B]);ylim([0,B]);
         zlabel(sprintf('Normalization: %s',Normalization));
-        f_name=sprintf('W_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
+        if A == 0
+            title(sprintf('SGDL | eta: %s | batch size: %s', num2str(eta,'%+.5f'), num2str(batch_size,'%+.5f')));
+        else
+            title(sprintf('SGD | eta: %s | batch size: %s | A: %s', num2str(eta,'%+.5f'), num2str(batch_size,'%+.5f'), num2str(A,'%+.5f')));
+        end
+        f_name=sprintf('W_%dD_eta%.2f_bs%d_A%.3f',D,eta,batch_size,A);
+        f_name = strrep(f_name,'.','p')
+        saveas(fig,f_name);saveas(fig,f_name,'pdf');
         %% plot learning curve
         fig = figure;
         iterations=1:length(g_history(:,1));
         subplot(1,2,1);plot(iterations,g_history(:,1));
+        title('gradient vs iterations W_1');
         subplot(1,2,2);plot(iterations,g_history(:,2));
+        title('gradient vs iterations W_2');
         f_name=sprintf('g_vs_iter_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
-        %%
+        %% G_histogram
         fig = figure;
         hist3(g_history,[nbins_g,nbins_g]);
         ylabel('dL/W_2');xlabel('dL/W_1');
         zlabel(sprintf('Normalization: %s',Normalization))
         set(get(gca,'child'),'FaceColor','interp','CDataMode','auto');
+        title('histograms of gradients vs [W_1,W_2]');
         f_name=sprintf('G_%dD',D);saveas(fig,f_name);saveas(fig,f_name,'pdf');
     end
 %     for d=1:D

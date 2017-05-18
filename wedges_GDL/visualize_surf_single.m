@@ -5,8 +5,8 @@ y = x;
 [X,Y] = meshgrid(x,y);
 Z = get_Z_from_meshgrid_f(X,Y,f);
 surf(X,Y,Z);
-ylabel('weight W_1')
-xlabel('weight W_2')
+ylabel('weight W_2')
+xlabel('weight W_1')
 zlabel('Loss')
 end
 

@@ -1,17 +1,17 @@
-D = 5
-W = 7.0*ones(1,D);
-%% f
-%f = @(x) exp(x);
-%f = @(x) polyval([1 2 3 4 5],x);
-f = @U_func_unit_test
-%% my der
-eps = 0.001;
-dfdx__forward_me = numerical_gradient_forward(W,f,eps)
-%% SO der
-dfdx_SO = CalcNumericalGradient(f,W,eps)
+clear;
 %%
-dfdx_loops = eps*get_gradient_loops( W )
-%% lib derivative
-%[dfdx_lib,~] = derivest(f,W) 
-%% compare
-%dfdx_me == dfdx_their
+load('rbf_loss_surface_visual2');
+%%
+f = @(x) exp(norm(x,2));
+%f = @(x) f_batch_new(x,ind_mini_batch,params);
+%%
+D = 2
+W = 7.0*rand(1,D);
+%%
+eps = 0.00000001;
+%% dfdx__forward
+dfdx_forward = numerical_gradient_forward(W,f,eps)
+%% dfdx_SO
+dfdx_SO = CalcNumericalDeriv(W,f,eps)
+%% dfdx__forward_backard
+dfdx_forward_backard = numerical_gradient(W,f,eps)
