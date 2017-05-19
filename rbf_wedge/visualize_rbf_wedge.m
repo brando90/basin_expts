@@ -11,11 +11,7 @@ offset_i_coord = 4.67;
 t = get_centers(K,D,i_coord,offset_i_coord+1,lb-1.1,ub+1.1); % K x D
 tt = sum(t.^2,2)';
 % get C's weights
-<<<<<<< HEAD
-C = -1*ones(K,1)/(20);
-=======
 C = -1*ones(K,1)/(17.5);
->>>>>>> 1a2e457b3615cc8f960a549c1150db980b76508b
 % get Gaussian precision
 stddev = 0.9;
 beta = 1/(2*stddev^2);
@@ -26,11 +22,7 @@ center_pyramid = [4.0,1.7];
 t_p = center_pyramid + normrnd(0,0.15,[K_p,2]);
 tt_p = sum(t_p.^2,2)';
 % get C's weights
-<<<<<<< HEAD
-C_p = -1*ones(K_p,1)/(K_p);
-=======
 C_p = -1*ones(K_p,1)/(K_p-1.2);
->>>>>>> 1a2e457b3615cc8f960a549c1150db980b76508b
 % get Gaussian precision
 stddev_p = 0.77;
 beta_p = 1/(2*stddev_p^2);
@@ -48,7 +40,7 @@ ind_mini_batch(1:length(C))=1;
 ind_mini_batch(end-1) = 1;
 ind_mini_batch(end) = 1;
 f_M_batch = @(x) f_batch_new(x,ind_mini_batch,params);
-%save('rbf_loss_surface_visual2');
+save('rbf_loss_surface_visual3');
 %%
 visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 %visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');
