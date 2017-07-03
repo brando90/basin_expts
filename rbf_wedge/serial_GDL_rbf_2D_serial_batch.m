@@ -1,10 +1,10 @@
 clear;
 %% load RBF wedge loss surface
-load('rbf_loss_surface_visual2');
+load('rbf_loss_surface_visual3');
 %filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
 %%
-nb_expts = 1
-W_all_name = ['tmp5_W_hist' num2str(nb_expts)]
+nb_expts = 30
+W_all_name = ['tmp_W_hist_nips3_sgd' num2str(nb_expts)]
 rbf_expt = 'rbf_expt/'
 %
 root = ''
@@ -29,27 +29,27 @@ visualize_training_surf = 0
 %visualize_training_surf = 1
 visualize_freq = report_freq
 %% initialization
-%W = [0,0];
-%init_W = @(W,B) mod( W+B*rand([1,2]), B); % generate a random vector 1x2 in interval [0,B]
-W = t_p(1,:); 
-init_W = @(W,B) W + normrnd(0,0.01,[1,D]);
+W = [0,0];
+init_W = @(W,B) mod( W+B*rand([1,2]), B); % generate a random vector 1x2 in interval [0,B]
+%W = t_p(1,:); 
+%init_W = @(W,B) W + normrnd(0,0.005,[1,D]);
 %% GD params
 %g_eps = 3.25; % size of step difference
 g_eps = 0.0000001;
 %g_eps = 0.25; % size of step difference
 eta = 136; % step size %SGDL
-%eta = 154; % step size %SGD
+%eta = 126; % step size %SGD
 %eta = 10; % step size %GDL
 %% Langevian/noise params
-A = 0.2 %SGDL
+A = 0.25 %SGDL
 %A = 0 % SGD
 %A = 0.4 %GDL
 gdl_mu_noise = 0.0;
 gdl_std_noise = 1.0;
 %% SGD/MGD params 
 %batch_size = K + 1;
-%batch_size = 10; %SGD
-batch_size = 115; %SGDL
+%batch_size = 11; %SGD
+batch_size = 15; %SGDL
 %batch_size = K+K_p; %SGDL
 %% display option
 print_hist = 1;
@@ -117,7 +117,7 @@ else
    w_all_name = [w_all_path '_SGDL']
 end
 %%
-save(w_all_path)
+%save(w_all_path)
 %%
 if print_hist && expt_n == 1
     if D==2
