@@ -22,3 +22,7 @@ octave-workspace
 .autosave
 
 .DS_Store
+
+rbf_loss_surface_visual*
+*.pdf
+*.fig
