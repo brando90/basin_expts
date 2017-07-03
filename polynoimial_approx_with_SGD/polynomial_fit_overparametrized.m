@@ -2,10 +2,11 @@ clear;
 %% params
 lb = -1; ub = 1;
 N = 5;
-D_true=4;
-D_mdl = 4;
+D_true= 100;
+%D_mdl = 50;
+D_mdl = D_true;
 B=10;
-iter = 1000;
+iter = 5000;
 %% sample N points compute Poly(x) of degree(P) = N-1
 a=-1;b=1;
 x = a + (b-a).*rand(N,1);
@@ -20,8 +21,8 @@ nb_terms = D_mdl+1;
 W = zeros(nb_terms,1);
 W = W + normrnd(0,0.1,[nb_terms,1]);
 A=0;gdl_mu_noise = 0.0;gdl_std_noise = 1.0;
-eta=0.5;
-batch_size=3;indices = 1:N;
+eta=0.5*0.01;
+batch_size=2;indices = 1:N;
 for i=2:iter+1
     %% mini-batch
     i_batch = datasample(indices,batch_size,'Replace',false);
@@ -39,16 +40,16 @@ c_sgd = W;
 %% visualize
 x_horizontal = linspace(lb,ub,1000);
 fig = figure;hold on;
-%model poly
+%% model poly
 y_mdl = poly_kernel_matrix(x_horizontal,D_mdl)*c_mdl;
 plot(x_horizontal,y_mdl)
-%model SGD
-y_mdl = poly_kernel_matrix(x_horizontal,D_mdl)*c_sgd;
-plot(x_horizontal,y_mdl)
-% true poly
+%% model SGD
+%y_sgd = poly_kernel_matrix(x_horizontal,D_mdl)*c_sgd;
+%plot(x_horizontal,y_sgd)
+%% true poly
 %y_truth = poly_kernel_matrix(x_horizontal,D)*c;
 %plot(x_horizontal,y_truth)
-% plot data points
+%% plot data points
 plot(x,poly_kernel_matrix(x,D_true)*c_truth,'o')
 %% debug
 % figure;
