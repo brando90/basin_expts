@@ -2,7 +2,7 @@ clear;
 %% computation time params
 D = 5;
 nbins = 30;
-c = 2700000;
+c = 2700000; % note 24300000 = 30**5
 iter = c;
 %iter = c*nbins^3;
 %% GDL & mdl params

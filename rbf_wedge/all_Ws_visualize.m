@@ -3,7 +3,7 @@ clear;
 rbf_expt = 'rbf_expt/'
 root = ['~' '/home_simulation_research/simulation_results_scripts/' rbf_expt];
 %W_all_name = 'all_Ws.mat'
-W_all_name = 'tmp4_W_hist30_2D_eta10p00_bs115_A0p100.mat';
+W_all_name = 'tmp_W_hist_nips3_sgd30.mat';
 w_all_path = [root W_all_name]
 load(w_all_path);
 %%
