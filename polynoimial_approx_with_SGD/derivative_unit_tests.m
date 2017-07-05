@@ -22,36 +22,6 @@ f2 = @(c) (1/batch_size)*norm(y_batch - x_batch*c,2)^2;
 %W = W + normrnd(0,1,[D,1]);
 W = (1:D)';
 %%
-Y_Wx = zeros(N,1);
-Y_Wx_2_loops = zeros(N,1);
-wx = zeros(N,1);
-loss = 0
-for i=1:N
-    wx(i) = W'*X(i,:)';
-    y_vec(i) = Y(i);
-    Y_Wx(i) = (Y(i) - W'*X(i,:)');
-    Y_Wx_2_loops(i) = Y_Wx(i)^2;
-    loss = loss + Y_Wx(i)^2;
-end
-loss = (1/batch_size)*loss;
-y_batch
-y_vec
-wx
-wx_vec = x_batch*W
-Y_Wx
-Y_Wx_vec  = y_batch - x_batch*W
-
-Y_Wx_2_loops
-Y_Wx_2 = Y_Wx.^2
-Y_Wx_vec_2 = Y_Wx_vec.^2
-
-f(W)
-f(W)
-(1/N)*sum(Y_Wx_2)
-(1/N)*sum(Y_Wx_2_loops)
-(1/N)*sum(Y_Wx_vec_2)
-loss
-%%
 eps = 0.00000001;
 %%
 % l2_loss = l2loss( x_batch,y_batch,W )
