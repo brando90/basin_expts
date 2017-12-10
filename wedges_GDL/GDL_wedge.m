@@ -1,8 +1,8 @@
 clear;
 %% computation time params
-D = 5;
+D = 2;
 nbins = 30;
-c = 270000;
+c = 2700;
 iter = c;
 %iter = c*nbins^D;
 %% GDL & mdl params

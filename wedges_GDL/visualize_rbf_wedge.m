@@ -45,10 +45,10 @@ f_M_batch = @(x) f_batch_new(x,ind_mini_batch,params);
 visualize_surf_single(f_N_batch,100,lb,ub);title('f N batch');
 %visualize_surf_single(f_M_batch,100,lb,ub);title('f M batch');
 %
-g_eps = 2;
-for i=1:2
-    f = f_N_batch;
-    g_original = @(W) dVdW(W,f,i,0.0000001);
-    g = @(W) dVdW(W,f,i,g_eps);
-    visualize_surf2( g,i,lb,ub,100,g_original,batch_size,g_eps)
-end
+% g_eps = 2;
+% for i=1:2
+%     f = f_N_batch;
+%     g_original = @(W) dVdW(W,f,i,0.0000001);
+%     g = @(W) dVdW(W,f,i,g_eps);
+%     visualize_surf2( g,i,lb,ub,100,g_original,batch_size,g_eps)
+% end
