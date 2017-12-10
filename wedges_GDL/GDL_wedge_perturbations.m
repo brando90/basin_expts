@@ -1,0 +1,133 @@
+clear;
+%% computation time params
+D = 2;
+nbins = 100;
+c = 6000;
+%c = 100;
+iter = c;
+%iter = c*nbins^D;
+%% energy landscape
+lb = -8;ub = 8;N = 200;
+K = 4000; % number of centers wedge
+% get centers
+i_coord = 2;
+offset_i_coord = -1;
+t = get_centers(K,D,i_coord,offset_i_coord+1,lb-2.5,ub+2.5); % K x D
+tt = sum(t.^2,2)';
+% get C's weights
+C = -1*ones(K,1)/575;
+% get Gaussian precision
+stddev = 1.2;
+beta = 1/(2*stddev^2);
+%% params of loss surface
+params = struct('t',t,'tt',tt,'C',C,'beta',beta);
+%% RBF N batch
+%ind_mini_batch = ones(length([C;C_p]),1);
+%f_N_batch = @(x) f_batch_new(x,ind_mini_batch,params);
+ind_mini_batch = ones(1,K);
+f = @(x) f_batch_new_wedge(x,ind_mini_batch,params);
+%% GDL & mdl params
+g_eps = 0.00000001;
+eta = 0.01;
+B = 12;
+%
+%A = 0.05;
+A = 0;
+gdl_mu_noise = 0.0;
+gdl_std_noise = 1.0;
+%% init
+%W = 0.0*ones(1,D);
+mu_init=0;
+std_init=0.05;
+W = mu_init+std_init*randn(1,D);
+W = [0,4];
+W = [4,4];
+%% histogram
+print_hist = 1;
+filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
+save_figs = 1;
+edges = linspace(0,B,nbins);
+Normalization = 'probability';
+%Normalization = 'pdf';
+%Normalization = 'count';
+%%
+datetime('now')
+tic
+%%
+train_errors = zeros(iter+1,1);
+W_history = zeros(iter+1,D);
+g_history = zeros(iter+1,D);
+w_norms = zeros(iter+1,D);
+%%
+w_norms = norm(W,2);
+train_errors(1,:) = f(W);
+W_history(1,:) = W;
+W_hist_counts = zeros(size(edges)-[0,1]);
+for i=2:iter+1
+    %% gradient
+    %g = get_gradient(W,mu1,std1,mu2,std2);
+    g = CalcNumericalFiniteDiff(W,f,g_eps);
+    eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
+    %% SGD update
+    %W = mod(W - eta*g, B);
+    %W = mod(W - eta*g + A*eps, B);
+    W = W - eta*g + A*eps;
+    %% collect stats
+    train_errors(i) = f(W);
+    w_norms(i) = norm(W,2);
+    %2D
+    W_history(i,:) = W;
+    g_history(i,:) = g;
+    [W_hist_counts_current, edges2] = histcounts(W,edges);
+    W_hist_counts = W_hist_counts + W_hist_counts_current;
+end
+elapsedTime = toc;
+fprintf('D: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,nbins,D, iter);
+fprintf('elapsedTime %f seconds, %f minutes, %f hours \n', elapsedTime,elapsedTime/60,elapsedTime/(60*60));
+%W_history
+%%
+save(filename)
+%%
+visualize_surf_single(f,100,lb,ub);title('f N batch');
+fig = figure;
+plot(1:iter+1,train_errors)
+title('Energy Landscape');
+fig = figure;
+plot(1:iter+1,w_norms)
+title('Norm of Weights ||W||');
+if print_hist
+    if D==2
+        fig = figure;
+        hist3(W_history,[nbins,nbins]);
+        ylabel('Weight W_2')
+        xlabel('Weight W_1')
+        zlabel(sprintf('Normalization: %s',Normalization))
+%         if strcmp(Normalization, 'count') == 0
+%             zlim([0,1])
+%         end
+        f = sprintf('W_%dD',D);
+        saveas(fig,f)
+        saveas(fig,f,'pdf')
+    end
+%     for d=1:D
+%         normalizations = {'count','pdf','probability'};
+%         for i=1:3
+%             Normalization = normalizations{i};
+%             fig = figure;histogram(W_history(:,d),nbins,'Normalization',Normalization);
+%             xlabel('Weights');ylabel(sprintf('%s',Normalization))
+%             title(sprintf('Histogram of W_%d for %d D experiment',d,D));
+%             if strcmp(Normalization, 'probability')
+%                 ylim([0,1]);
+%             elseif strcmp(Normalization, 'pdf')
+%                 ylim([0,3]);
+%             end
+%             if save_figs
+%                 fname = sprintf('W%d_%dD_A%.3f_%s',d,D,A,Normalization);
+%                 fname = strrep(fname,'.','p');
+%                 saveas(fig,fname);saveas(fig,fname,'pdf');
+%             end
+%         end
+%     end
+end
+%%
+beep;
