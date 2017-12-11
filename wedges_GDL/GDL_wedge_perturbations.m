@@ -2,7 +2,7 @@ clear;
 %% computation time params
 D = 2;
 nbins = 100;
-c = 6000;
+c = 15000;
 %c = 100;
 iter = c;
 %iter = c*nbins^D;
@@ -38,10 +38,10 @@ gdl_std_noise = 1.0;
 %% init
 %W = 0.0*ones(1,D);
 mu_init=0;
-std_init=0.05;
+std_init=0.01;
 W = mu_init+std_init*randn(1,D);
-W = [0,4];
-W = [4,4];
+%W = [0,0];
+%W = [0,4];
 %% histogram
 print_hist = 1;
 filename = sprintf('current_gdl_run_%dD_A%.2d',D,A);
@@ -53,13 +53,18 @@ Normalization = 'probability';
 %%
 datetime('now')
 tic
+%% perturbation
+mu_pert = 0.0;
+%frac_norm = 2.3;
+std_pert = 1.0;
+perturbation_freq = 400;
 %%
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
 g_history = zeros(iter+1,D);
 w_norms = zeros(iter+1,D);
 %%
-w_norms = norm(W,2);
+w_norms(1,:) = norm(W,2);
 train_errors(1,:) = f(W);
 W_history(1,:) = W;
 W_hist_counts = zeros(size(edges)-[0,1]);
@@ -80,6 +85,12 @@ for i=2:iter+1
     g_history(i,:) = g;
     [W_hist_counts_current, edges2] = histcounts(W,edges);
     W_hist_counts = W_hist_counts + W_hist_counts_current;
+    %% perturb
+    if mod(i,perturbation_freq) == 0
+        %pert_noise = mu_pert + (frac_norm*norm(W,2))*randn(size(W))
+        pert_noise = mu_pert + std_pert*randn(size(W));
+        W = W + pert_noise;
+    end
 end
 elapsedTime = toc;
 fprintf('D: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,nbins,D, iter);
@@ -87,14 +98,23 @@ fprintf('elapsedTime %f seconds, %f minutes, %f hours \n', elapsedTime,elapsedTi
 %W_history
 %%
 save(filename)
+%% visualize landscape
+fig = visualize_surf_single(f,100,lb,ub);title('Energy Landscape');
+fname = 'energy_landscape';
+saveas(fig,fname);saveas(fig,fname,'pdf');
 %%
-visualize_surf_single(f,100,lb,ub);title('f N batch');
 fig = figure;
 plot(1:iter+1,train_errors)
-title('Energy Landscape');
+title('Train error vs Iteration');
+fname = 'train_errors';
+saveas(fig,fname);saveas(fig,fname,'pdf');
+%%
 fig = figure;
 plot(1:iter+1,w_norms)
 title('Norm of Weights ||W||');
+fname = 'norm of Weights';
+saveas(fig,fname);saveas(fig,fname,'pdf');
+%%
 if print_hist
     if D==2
         fig = figure;
@@ -109,25 +129,26 @@ if print_hist
         saveas(fig,f)
         saveas(fig,f,'pdf')
     end
-%     for d=1:D
-%         normalizations = {'count','pdf','probability'};
-%         for i=1:3
-%             Normalization = normalizations{i};
-%             fig = figure;histogram(W_history(:,d),nbins,'Normalization',Normalization);
-%             xlabel('Weights');ylabel(sprintf('%s',Normalization))
-%             title(sprintf('Histogram of W_%d for %d D experiment',d,D));
-%             if strcmp(Normalization, 'probability')
-%                 ylim([0,1]);
-%             elseif strcmp(Normalization, 'pdf')
-%                 ylim([0,3]);
-%             end
-%             if save_figs
-%                 fname = sprintf('W%d_%dD_A%.3f_%s',d,D,A,Normalization);
-%                 fname = strrep(fname,'.','p');
-%                 saveas(fig,fname);saveas(fig,fname,'pdf');
-%             end
-%         end
-%     end
+    for d=1:D
+        %normalizations = {'count','pdf','probability'};
+        normalizations = {'probability'};
+        for i=1:length(normalizations) % goes through the types of plots
+            Normalization = normalizations{i};
+            fig = figure;histogram(W_history(:,d),nbins,'Normalization',Normalization);
+            xlabel('Weights');ylabel(sprintf('%s',Normalization))
+            title(sprintf('Histogram of W_%d for %d D experiment',d,D));
+            if strcmp(Normalization, 'probability')
+                ylim([0,1]);
+            elseif strcmp(Normalization, 'pdf')
+                ylim([0,3]);
+            end
+            if save_figs
+                fname = sprintf('W%d_%dD_A%.3f_%s',d,D,A,Normalization);
+                fname = strrep(fname,'.','p');
+                saveas(fig,fname);saveas(fig,fname,'pdf');
+            end
+        end
+    end
 end
 %%
 beep;
