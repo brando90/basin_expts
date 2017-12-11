@@ -1,5 +1,5 @@
-function [ ] = visualize_surf_single( f,N,lb,ub )
-figure;
+function [ fig ] = visualize_surf_single( f,N,lb,ub )
+fig = figure;
 x = linspace(lb,ub,N);
 y = x;
 [X,Y] = meshgrid(x,y);

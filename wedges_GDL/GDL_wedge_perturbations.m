@@ -1,4 +1,6 @@
 clear;
+SLURM_JOBID = getenv('SLURM_JOBID')
+SLURM_ARRAY_TASK_ID = getenv('SLURM_ARRAY_TASK_ID')
 %% computation time params
 D = 2;
 nbins = 100;
@@ -57,7 +59,7 @@ tic
 mu_pert = 0.0;
 %frac_norm = 2.3;
 std_pert = 1.0;
-perturbation_freq = 400;
+perturbation_freq = 420;
 %%
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
@@ -98,24 +100,24 @@ fprintf('elapsedTime %f seconds, %f minutes, %f hours \n', elapsedTime,elapsedTi
 %W_history
 %%
 save(filename)
-%% visualize landscape
-fig = visualize_surf_single(f,100,lb,ub);title('Energy Landscape');
-fname = 'energy_landscape';
-saveas(fig,fname);saveas(fig,fname,'pdf');
-%%
-fig = figure;
-plot(1:iter+1,train_errors)
-title('Train error vs Iteration');
-fname = 'train_errors';
-saveas(fig,fname);saveas(fig,fname,'pdf');
-%%
-fig = figure;
-plot(1:iter+1,w_norms)
-title('Norm of Weights ||W||');
-fname = 'norm of Weights';
-saveas(fig,fname);saveas(fig,fname,'pdf');
-%%
+%% Visualize simulation
 if print_hist
+    %% visualize landscape
+    fig = visualize_surf_single(f,100,lb,ub);title('Energy Landscape');
+    fname = 'energy_landscape';
+    saveas(fig,fname);saveas(fig,fname,'pdf');
+    %%
+    fig = figure;
+    plot(1:iter+1,train_errors)
+    title('Train error vs Iteration');
+    fname = 'train_errors';
+    saveas(fig,fname);saveas(fig,fname,'pdf');
+    %%
+    fig = figure;
+    plot(1:iter+1,w_norms)
+    title('Norm of Weights ||W||');
+    fname = 'norm of Weights';
+    saveas(fig,fname);saveas(fig,fname,'pdf');
     if D==2
         fig = figure;
         hist3(W_history,[nbins,nbins]);
