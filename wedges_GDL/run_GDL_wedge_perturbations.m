@@ -96,7 +96,8 @@ fprintf('D: %d, nbins: %f, c: %f, iter=c*nbins^D=%d*%d^%d = %d \n',D,nbins,c, c,
 fprintf('elapsedTime %f seconds, %f minutes, %f hours \n', elapsedTime,elapsedTime/60,elapsedTime/(60*60));
 %W_history
 %%
-dir_path = './test_runs/unit_test_job_name_iter_'
+%dir_path = './test_runs/unit_test_job_name_iter_'
+dir_path = './test_runs/unit_OM_test_job_name_iter_'
 %dir_path = './test_runs/job_name_iter_'
 dir_path = [dir_path num2str(iter) '_eta_' num2str(eta) '_mu_pert_' num2str(mu_pert) '_std_pert_' num2str(std_pert) 'perturbation_freq' num2str(perturbation_freq) ]
 mkdir(dir_path)
