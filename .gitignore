@@ -26,3 +26,5 @@ octave-workspace
 rbf_loss_surface_visual*
 *.pdf
 *.fig
+
+test_runs/
