@@ -3,7 +3,7 @@
 #SBATCH --time=0-11:00
 #SBATCH --mail-type=END
 #SBATCH --mail-user=brando90@mit.edu
-#SBATCH --array=1-3
+#SBATCH --array=1-30
 
 echo start
 

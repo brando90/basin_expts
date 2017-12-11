@@ -97,8 +97,8 @@ fprintf('elapsedTime %f seconds, %f minutes, %f hours \n', elapsedTime,elapsedTi
 %W_history
 %%
 %dir_path = './test_runs/unit_test_job_name_iter_'
-dir_path = './test_runs/unit_OM_test_job_name_iter_'
-%dir_path = './test_runs/job_name_iter_'
+%dir_path = './test_runs/unit_OM_test_job_name_iter_'
+dir_path = './test_runs/job_name_iter_'
 dir_path = [dir_path num2str(iter) '_eta_' num2str(eta) '_mu_pert_' num2str(mu_pert) '_std_pert_' num2str(std_pert) 'perturbation_freq' num2str(perturbation_freq) ]
 mkdir(dir_path)
 filename = [ dir_path '/GDL_pert' '_jid_' num2str(SLURM_JOBID) '_satid_' num2str(SLURM_ARRAY_TASK_ID) ];
