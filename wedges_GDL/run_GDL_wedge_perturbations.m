@@ -61,7 +61,7 @@ perturbation_freq = 420;
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
 g_history = zeros(iter+1,D);
-w_norms = zeros(iter+1);
+w_norms = zeros(iter+1,1);
 %%
 w_norms(1) = norm(W,2);
 train_errors(1,:) = f(W);
