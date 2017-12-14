@@ -2,7 +2,7 @@ function [ ] = run_GDL_wedge_perturbations( SLURM_JOBID,SLURM_ARRAY_TASK_ID,prin
 %% computation time params
 D = 2;
 nbins = 100;
-c = 15000;
+c = 16000;
 %c = 100;
 iter = c;
 %iter = c*nbins^D;
