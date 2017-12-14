@@ -1,6 +1,6 @@
 %path = '../pytorch_experiments/test_runs/pert_expt_reg__expt_type_SP_fig4_N_train_9_M_9_frac_norm_0.013_logging_freq_2_perturbation_freq_1000/fig4_expt_lambda_0_it_250000/deg_30/';
 %path='./test_runs/job_name_iter_14000_eta_0.01_mu_pert_0_std_pert_1perturbation_freq420/'
-path='./test_runs/job_name_iter_15000_eta_0.01_mu_pert_0_std_pert_1perturbation_freq420/'
+path='./test_runs/job_name_iter_16000_eta_0.01_mu_pert_0_std_pert_1perturbation_freq420/'
 data_filenames = dir(path);
 logging_freq=1;
 %% COUNT nb of files
@@ -14,7 +14,7 @@ for file_struct = data_filenames'
 end
 nb_files
 %%
-load([path 'GDL_pert_jid_9788929_satid_24.mat'])
+load([path 'GDL_pert_jid_9809351_satid_18.mat'])
 %% collect all data in 1 matrix
 [nb_iters,~] = size(train_errors);
 w_norms_all = zeros( [nb_files,nb_iters] );
