@@ -2,30 +2,32 @@ function [ ] = run_GDL_wedge_perturbations( SLURM_JOBID,SLURM_ARRAY_TASK_ID,prin
 %% computation time params
 D = 2;
 nbins = 100;
-c = 25000;
+c = 250000;
 %c = 100;
 iter = c;
 %iter = c*nbins^D;
 %% energy landscape
-lb = -8;ub = 8;N = 200;
-K = 4000; % number of centers wedge
+lb = -8;ub = 8;
+%N = 200;
+%K = 4000; % number of centers wedge
 % get centers
-i_coord = 2;
-offset_i_coord = -1;
-t = get_centers(K,D,i_coord,offset_i_coord+1,lb-2.5,ub+2.5); % K x D
-tt = sum(t.^2,2)';
+%i_coord = 2;
+%offset_i_coord = -1;
+%t = get_centers(K,D,i_coord,offset_i_coord+1,lb-2.5,ub+2.5); % K x D
+%tt = sum(t.^2,2)';
 % get C's weights
-C = -1*ones(K,1)/575;
+%C = -1*ones(K,1)/575;
 % get Gaussian precision
-stddev = 1.2;
+stddev = 2.0;
 beta = 1/(2*stddev^2);
 %% params of loss surface
-params = struct('t',t,'tt',tt,'C',C,'beta',beta);
+%params = struct('t',t,'tt',tt,'C',C,'beta',beta);
 %% RBF N batch
 %ind_mini_batch = ones(length([C;C_p]),1);
 %f_N_batch = @(x) f_batch_new(x,ind_mini_batch,params);
-ind_mini_batch = ones(1,K);
-f = @(x) f_batch_new_wedge(x,ind_mini_batch,params);
+%ind_mini_batch = ones(1,K);
+%f = @(x) f_batch_new_wedge(x,ind_mini_batch,params);
+f = @(x) -exp(-beta*x(2)^2);
 %% GDL & mdl params
 g_eps = 0.00000001;
 eta = 0.04;
@@ -71,11 +73,12 @@ for i=2:iter+1
     %% gradient
     %g = get_gradient(W,mu1,std1,mu2,std2);
     g = CalcNumericalFiniteDiff(W,f,g_eps);
-    eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
+    %eps = normrnd(gdl_mu_noise,gdl_std_noise,[1,D]);
     %% SGD update
     %W = mod(W - eta*g, B);
     %W = mod(W - eta*g + A*eps, B);
-    W = W - eta*g + A*eps;
+    %W = W - eta*g + A*eps;
+    W = W - eta*g;
     %% collect stats
     train_errors(i) = f(W);
     w_norms(i) = norm(W,2);
