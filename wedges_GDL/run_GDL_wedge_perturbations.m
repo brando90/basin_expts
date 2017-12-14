@@ -28,7 +28,7 @@ ind_mini_batch = ones(1,K);
 f = @(x) f_batch_new_wedge(x,ind_mini_batch,params);
 %% GDL & mdl params
 g_eps = 0.00000001;
-eta = 0.01;
+eta = 0.02;
 B = 12;
 %
 %A = 0.05;
@@ -55,8 +55,8 @@ tic
 %% perturbation
 mu_pert = 0.0;
 %frac_norm = 2.3;
-std_pert = 1.5;
-perturbation_freq = 2000;
+std_pert = 1.6;
+perturbation_freq = 1500;
 %%
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
