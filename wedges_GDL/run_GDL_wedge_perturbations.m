@@ -2,7 +2,7 @@ function [ ] = run_GDL_wedge_perturbations( SLURM_JOBID,SLURM_ARRAY_TASK_ID,prin
 %% computation time params
 D = 2;
 nbins = 100;
-c = 23000;
+c = 24000;
 %c = 100;
 iter = c;
 %iter = c*nbins^D;
@@ -56,7 +56,7 @@ tic
 mu_pert = 0.0;
 %frac_norm = 2.3;
 std_pert = 1.5;
-perturbation_freq = 10000;
+perturbation_freq = 2000;
 %%
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
@@ -87,8 +87,8 @@ for i=2:iter+1
     %% perturb
     if mod(i,perturbation_freq) == 0
         %pert_noise = mu_pert + (frac_norm*norm(W,2))*randn(size(W))
-        %pert_noise = mu_pert + std_pert*randn(size(W));
-        pert_noise = mu_pert + std_pert*rand(size(W))-0.5;
+        pert_noise = mu_pert + std_pert*randn(size(W));
+        %pert_noise = mu_pert + std_pert*rand(size(W))-0.5;
         W = W + pert_noise;
     end
 end
