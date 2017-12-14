@@ -55,8 +55,8 @@ tic
 %% perturbation
 mu_pert = 0.0;
 %frac_norm = 2.3;
-std_pert = 1.1;
-perturbation_freq = 1100;
+std_pert = 1.5;
+perturbation_freq = 10000;
 %%
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
