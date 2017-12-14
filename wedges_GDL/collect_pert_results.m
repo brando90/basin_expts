@@ -1,6 +1,8 @@
 %path = '../pytorch_experiments/test_runs/pert_expt_reg__expt_type_SP_fig4_N_train_9_M_9_frac_norm_0.013_logging_freq_2_perturbation_freq_1000/fig4_expt_lambda_0_it_250000/deg_30/';
+%path='./test_runs/job_name_iter_14000_eta_0.01_mu_pert_0_std_pert_1perturbation_freq420/'
 path='./test_runs/job_name_iter_15000_eta_0.01_mu_pert_0_std_pert_1perturbation_freq420/'
 data_filenames = dir(path);
+logging_freq=1;
 %% COUNT nb of files
 nb_files = 0;
 for file_struct = data_filenames'
@@ -12,24 +14,23 @@ for file_struct = data_filenames'
 end
 nb_files
 %%
-load([path 'GDL_pert_jid_9788241_satid_14.mat'])
+load([path 'GDL_pert_jid_9788929_satid_24.mat'])
 %% collect all data in 1 matrix
 [nb_iters,~] = size(train_errors);
 w_norms_all = zeros( [nb_files,nb_iters] );
 train_loss_list_WP_all = zeros( [nb_files,nb_iters] );
 %test_loss_list_WP_all = zeros( [nb_files,nb_iters] );
-i = 1;
+index = 1;
 for file_struct = data_filenames'
     if ~( strcmp(file_struct.name,'.') || strcmp(file_struct.name,'..') || strcmp(file_struct.name,'.DS_Store') )
         load( [path file_struct.name] );
-        w_norms_all(i,:) = w_norms;
-        train_loss_list_WP_all(i,:) = train_loss_list_WP;
+        w_norms_all(index,:) = w_norms';
+        train_loss_list_WP_all(index,:) = train_errors';
         %test_loss_list_WP_all(i,:) = test_loss_list_WP;
-        i = i + 1;
+        index = index + 1;
     end
 end
 %% collect stats
-load([path 'GDL_pert_jid_9788241_satid_14.mat'])
 %% means & stds
 w_norms_means = zeros( size(w_norms) );
 train_loss_list_WP_mean = zeros( size(train_errors) );
@@ -40,14 +41,15 @@ train_loss_list_WP_stds = zeros( size(train_errors) );
 %test_loss_list_WP_stds = zeros( size(test_loss_list_WP) );
 %grad_list_weight_sgd_stds
 for iter = 1:nb_iters
-    w_norms_means(:,iter) = mean( w_norms_all(:,iter) );
-    train_loss_list_WP_mean(:,iter) = mean( train_loss_list_WP_all(:,iter) );
-    %test_loss_list_WP_mean(:,iter) = mean( test_loss_list_WP_all(:,iter) );
+    w_norms_means(iter) = mean( w_norms_all(:,iter) );
+    train_loss_list_WP_mean(iter) = mean( train_loss_list_WP_all(:,iter) );
+    %test_loss_list_WP_mean(iter) = mean( test_loss_list_WP_all(:,iter) );
     %%
-    w_norms_stds(:,iter) = std( w_norms_all(:,iter) );
-    train_loss_list_WP_stds(:,iter) = std( train_loss_list_WP_all(:,iter) );
-    %test_loss_list_WP_stds(:,iter) = std( test_loss_list_WP_all(:,iter) );
+    w_norms_stds(iter) = std( w_norms_all(:,iter) );
+    train_loss_list_WP_stds(iter) = std( train_loss_list_WP_all(:,iter) );
+    %test_loss_list_WP_stds(iter) = std( test_loss_list_WP_all(:,iter) );
 end
+%%
 x_axis = 1:nb_iters;
 x_label_str = ['number of iterations/ ' num2str(logging_freq)];
 fig = figure;
