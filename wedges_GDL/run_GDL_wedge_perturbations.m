@@ -2,7 +2,7 @@ function [ ] = run_GDL_wedge_perturbations( SLURM_JOBID,SLURM_ARRAY_TASK_ID,prin
 %% computation time params
 D = 2;
 nbins = 100;
-c = 24000;
+c = 25000;
 %c = 100;
 iter = c;
 %iter = c*nbins^D;
@@ -28,7 +28,7 @@ ind_mini_batch = ones(1,K);
 f = @(x) f_batch_new_wedge(x,ind_mini_batch,params);
 %% GDL & mdl params
 g_eps = 0.00000001;
-eta = 0.02;
+eta = 0.04;
 B = 12;
 %
 %A = 0.05;
@@ -56,7 +56,7 @@ tic
 mu_pert = 0.0;
 %frac_norm = 2.3;
 std_pert = 1.6;
-perturbation_freq = 1500;
+perturbation_freq = 1100;
 %%
 train_errors = zeros(iter+1,1);
 W_history = zeros(iter+1,D);
